@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="xofz.GoDaddyUpdater.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="PublicApiKey" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">GoDaddy public API key here</Value>
+    </Setting>
+    <Setting Name="PrivateApiKey" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">GoDaddy API secret here</Value>
+    </Setting>
+    <Setting Name="Domain" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Domain</Value>
+    </Setting>
+    <Setting Name="Subdomain" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Subdomain</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
