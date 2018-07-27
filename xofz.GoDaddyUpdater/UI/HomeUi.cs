@@ -14,6 +14,8 @@
 
         event Action CopySyncedIpKeyTapped;
 
+        event Action ExitRequested;
+
         string Hostname { get; set; }
 
         string CurrentIP { get; set; }

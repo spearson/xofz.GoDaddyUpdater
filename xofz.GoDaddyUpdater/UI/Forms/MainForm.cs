@@ -1,6 +1,7 @@
 ﻿namespace xofz.GoDaddyUpdater.UI.Forms
 {
     using System.Threading;
+    using System.Windows.Forms;
     using xofz.UI.Forms;
     using xofz.GoDaddyUpdater.Properties;
     
@@ -13,6 +14,13 @@
             this.InitializeComponent();
 
             this.Icon = Resources.GoDaddyUpdater_Icon;
+            var ni = this.notifyIcon;
+            ni.Icon = Resources.GoDaddyUpdater_Icon;
+            var cm = new ContextMenu();
+            var exitMenuItem = new MenuItem("Exit");
+            exitMenuItem.Click += this.exitMenuItem_Click;
+            cm.MenuItems.Add(exitMenuItem);
+            ni.ContextMenu = cm;
 
             var h = this.Handle;
         }
@@ -26,6 +34,8 @@
         public event Action CopyCurrentIpKeyTapped;
 
         public event Action CopySyncedIpKeyTapped;
+
+        public event Action ExitRequested;
 
         string HomeUi.Hostname
         {
@@ -179,6 +189,47 @@
             }
 
             ThreadPool.QueueUserWorkItem(o => csikt.Invoke());
+        }
+
+        private void notifyIcon_Click(object sender, System.EventArgs e)
+        {
+            if (this.Visible)
+            {
+                if (this.WindowState == FormWindowState.Minimized)
+                {
+                    this.WindowState = FormWindowState.Normal;
+                    this.Activate();
+                    return;
+                }
+
+                this.Visible = false;
+                return;
+            }
+
+            this.Visible = true;
+            this.WindowState = FormWindowState.Normal;
+            this.Activate();
+        }
+
+        private void this_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            this.Visible = false;
+        }
+
+        private void exitMenuItem_Click(
+            object sender, 
+            System.EventArgs e)
+        {
+            var er = this.ExitRequested;
+            if (er == null)
+            {
+                return;
+            }
+
+            this.notifyIcon.Visible = false;
+            ThreadPool.QueueUserWorkItem(
+                o => er.Invoke());
         }
     }
 }

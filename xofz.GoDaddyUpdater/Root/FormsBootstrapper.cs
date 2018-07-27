@@ -7,6 +7,7 @@
     using xofz.Framework.Logging;
     using xofz.Presentation;
     using xofz.Root;
+    using xofz.Root.Commands;
     using xofz.UI;
     using xofz.UI.Forms;
     using xofz.GoDaddyUpdater.Framework.SettingsProviders;
@@ -61,6 +62,8 @@
                 .Execute(new SetupHomeCommand(
                     s,
                     new FormsClipboardCopier(),
+                    w))
+                .Execute(new SetupShutdownCommand(
                     w));
             w.Run<Navigator>(n => n.Present<HomePresenter>());
         }

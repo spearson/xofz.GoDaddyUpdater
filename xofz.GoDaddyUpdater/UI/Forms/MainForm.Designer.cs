@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.Label label1;
             System.Windows.Forms.Label label2;
             System.Windows.Forms.Label label3;
@@ -45,6 +46,7 @@
             this.copySyncedIpKey = new System.Windows.Forms.Button();
             this.coreVersionLabel = new System.Windows.Forms.Label();
             this.versionLabel = new System.Windows.Forms.Label();
+            this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             label3 = new System.Windows.Forms.Label();
@@ -268,6 +270,12 @@
             this.versionLabel.TabIndex = 99;
             this.versionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // notifyIcon
+            // 
+            this.notifyIcon.Text = "GoDaddyUpdater";
+            this.notifyIcon.Visible = true;
+            this.notifyIcon.Click += new System.EventHandler(this.notifyIcon_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -293,6 +301,7 @@
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "X of Z GoDaddyUpdater";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.this_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -311,6 +320,7 @@
         private System.Windows.Forms.Button copySyncedIpKey;
         private System.Windows.Forms.Label coreVersionLabel;
         private System.Windows.Forms.Label versionLabel;
+        private System.Windows.Forms.NotifyIcon notifyIcon;
     }
 }
 

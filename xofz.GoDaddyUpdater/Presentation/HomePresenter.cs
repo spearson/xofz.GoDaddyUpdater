@@ -58,6 +58,10 @@
                     this.ui,
                     nameof(this.ui.CopySyncedIpKeyTapped),
                     this.ui_CopySyncedIpKeyTapped);
+                subscriber.Subscribe(
+                    this.ui,
+                    nameof(this.ui.ExitRequested),
+                    this.ui_ExitRequested);
                 w.Run<xofz.Framework.Timer>(t =>
                     {
                         subscriber.Subscribe(
@@ -208,6 +212,12 @@
                     this.ui.StartSyncingKeyEnabled = true;
                     this.ui.StopSyncingKeyEnabled = false;
                 });
+        }
+
+        private void ui_ExitRequested()
+        {
+            var w = this.web;
+            w.Run<Navigator>(n => n.Present<ShutdownPresenter>());
         }
 
         private void timer_Elapsed()
@@ -366,8 +376,17 @@
                     }
 
                     error:
-                    w.Run<Messenger>(m =>
+                    w.Run<EventRaiser>(er =>
                     {
+                        er.Raise(
+                            this.ui,
+                            nameof(this.ui.StopSyncingKeyTapped));
+                    });
+
+                    w.Run<xofz.Framework.Timer, Messenger>((t, m) =>
+                    {
+                        t.Stop();
+
                         var message = "There was an error reading or updating DNS records for "
                             + settings.Subdomain
                             + @"."
@@ -380,13 +399,11 @@
                         UiHelpers.Write(
                             m.Subscriber,
                             () => m.GiveError(message));
-                        w.Run<EventRaiser>(er =>
-                        {
-                            er.Raise(
-                                this.ui,
-                                nameof(this.ui.StopSyncingKeyTapped));
-                        });
-                    });
+                        m.Subscriber.WriteFinished.WaitOne();
+
+                        t.Start(TimeSpan.FromMinutes(5));
+                    },
+                    "HomeTimer");
                     return;
                 }
 
