@@ -1,7 +1,9 @@
 ﻿namespace xofz.GoDaddyUpdater.UI.Forms
 {
-    using xofz.UI.Forms;
     using System.Threading;
+    using xofz.UI.Forms;
+    using xofz.GoDaddyUpdater.Properties;
+    
 
     public partial class MainForm 
         : FormUi, HomeUi
@@ -9,6 +11,8 @@
         public MainForm()
         {
             this.InitializeComponent();
+
+            this.Icon = Resources.GoDaddyUpdater_Icon;
 
             var h = this.Handle;
         }
