@@ -11,7 +11,8 @@
                 PublicApiKey = Settings.Default.PublicApiKey,
                 PrivateApiKey = Settings.Default.PrivateApiKey,
                 Domain = Settings.Default.Domain,
-                Subdomain = Settings.Default.Subdomain
+                Subdomain = Settings.Default.Subdomain,
+                HttpExternalIpProviderUri = Settings.Default.HttpExternalIpProviderUri
             };
         }
     }

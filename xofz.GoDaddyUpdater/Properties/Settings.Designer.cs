@@ -58,5 +58,14 @@ namespace xofz.GoDaddyUpdater.Properties {
                 return ((string)(this["Subdomain"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://icanhazip.com")]
+        public string HttpExternalIpProviderUri {
+            get {
+                return ((string)(this["HttpExternalIpProviderUri"]));
+            }
+        }
     }
 }

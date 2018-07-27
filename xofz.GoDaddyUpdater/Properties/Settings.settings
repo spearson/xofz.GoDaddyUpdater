@@ -14,5 +14,8 @@
     <Setting Name="Subdomain" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Subdomain</Value>
     </Setting>
+    <Setting Name="HttpExternalIpProviderUri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://icanhazip.com</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

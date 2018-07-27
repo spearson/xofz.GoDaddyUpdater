@@ -1,6 +1,5 @@
 ﻿namespace xofz.GoDaddyUpdater.Root.Implementation
 {
-    using System.Threading;
     using System.Windows.Forms;
     using xofz.GoDaddyUpdater.Framework;
 

@@ -50,9 +50,7 @@
     <Compile Include="Framework\ClipboardCopier.cs" />
     <Compile Include="Framework\Record.cs" />
     <Compile Include="Framework\GlobalSettingsHolder.cs" />
-    <Compile Include="Framework\HttpClientExtensions.cs" />
     <Compile Include="Framework\HttpClientFactory.cs" />
-    <Compile Include="Framework\JsonMaker.cs" />
     <Compile Include="Framework\SettingsProvider.cs" />
     <Compile Include="Framework\SettingsProviders\AppConfigSettingsProvider.cs" />
     <Compile Include="Presentation\HomePresenter.cs" />

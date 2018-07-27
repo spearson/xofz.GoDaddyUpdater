@@ -213,7 +213,8 @@
 
             var w = this.web;
             string currentIP = null;
-            w.Run<HttpClientFactory>(factory =>
+            w.Run<HttpClientFactory, GlobalSettingsHolder>(
+                (factory, settings) =>
             {
                 using (var hc = factory.Create())
                 {
@@ -221,7 +222,8 @@
                     Task<string> currentIpTask;
                     try
                     {
-                        currentIpTask = hc.GetStringAsync(@"http://icanhazip.com");
+                        currentIpTask = hc.GetStringAsync(
+                            settings.HttpExternalIpProviderUri);
                         currentIpTask.Wait();
                     }
                     catch
@@ -238,6 +240,7 @@
                     this.ui,
                     () => this.ui.CurrentIP = currentIP);
             });
+
             w.Run<HttpClientFactory, GlobalSettingsHolder>(
                 (factory, settings) =>
             {
