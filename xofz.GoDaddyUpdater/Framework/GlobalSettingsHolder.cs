@@ -12,5 +12,7 @@
 
         // calls Trim() on the response string
         public virtual string HttpExternalIpProviderUri { get; set; }
+
+        public virtual bool AutoStart { get; set; }
     }
 }

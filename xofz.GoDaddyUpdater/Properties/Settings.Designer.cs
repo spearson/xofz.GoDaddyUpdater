@@ -67,5 +67,14 @@ namespace xofz.GoDaddyUpdater.Properties {
                 return ((string)(this["HttpExternalIpProviderUri"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoStart {
+            get {
+                return ((bool)(this["AutoStart"]));
+            }
+        }
     }
 }

@@ -17,5 +17,8 @@
     <Setting Name="HttpExternalIpProviderUri" Type="System.String" Scope="Application">
       <Value Profile="(Default)">http://icanhazip.com</Value>
     </Setting>
+    <Setting Name="AutoStart" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

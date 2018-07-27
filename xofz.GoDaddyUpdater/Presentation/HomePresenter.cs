@@ -68,14 +68,18 @@
                     "HomeTimer");
             });
 
-            UiHelpers.Write(
+            w.Run<GlobalSettingsHolder>(settings =>
+            {
+                var startKeyEnabled = !settings.AutoStart;
+                UiHelpers.Write(
                 this.ui,
                 () =>
                 {
-                    this.ui.StartSyncingKeyEnabled = true;
-                    this.ui.StopSyncingKeyEnabled = false;
+                    this.ui.StartSyncingKeyEnabled = startKeyEnabled;
+                    this.ui.StopSyncingKeyEnabled = !startKeyEnabled;
                 });
-            this.ui.WriteFinished.WaitOne();
+                this.ui.WriteFinished.WaitOne();
+            });            
 
             w.Run<GlobalSettingsHolder>(s =>
             {
