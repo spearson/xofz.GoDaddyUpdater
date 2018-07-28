@@ -41,7 +41,11 @@
         {
             get => this.hostnameLabel.Text;
 
-            set => this.hostnameLabel.Text = value;
+            set
+            {
+                this.hostnameLabel.Text = value;
+                this.notifyIcon.Text = @"GoDaddyUpdater [" + value + "]";
+            }
         }
 
         string HomeUi.CurrentIP
