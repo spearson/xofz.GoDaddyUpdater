@@ -2,10 +2,13 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Sockets;
+    using System.Reflection;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
@@ -15,6 +18,7 @@
     using xofz.UI;
     using xofz.GoDaddyUpdater.Framework;
     using xofz.GoDaddyUpdater.UI;
+    using System.Security.Principal;
 
     public sealed class HomePresenter : Presenter
     {
@@ -62,6 +66,18 @@
                     this.ui,
                     nameof(this.ui.ExitRequested),
                     this.ui_ExitRequested);
+                subscriber.Subscribe(
+                    this.ui,
+                    nameof(this.ui.InstallServiceRequested),
+                    this.ui_InstallServiceRequested);
+                subscriber.Subscribe(
+                    this.ui,
+                    nameof(this.ui.RefreshServiceRequested),
+                    this.ui_RefreshServiceRequested);
+                subscriber.Subscribe(
+                    this.ui,
+                    nameof(this.ui.UninstallServiceRequested),
+                    this.ui_UninstallServiceRequested);
                 w.Run<xofz.Framework.Timer>(t =>
                     {
                         subscriber.Subscribe(
@@ -83,7 +99,7 @@
                     this.ui.StopSyncingKeyEnabled = !startKeyEnabled;
                 });
                 this.ui.WriteFinished.WaitOne();
-            });            
+            });
 
             w.Run<GlobalSettingsHolder>(s =>
             {
@@ -196,7 +212,7 @@
             this.ui.WriteFinished.WaitOne();
             w.Run<xofz.Framework.Timer, EventRaiser>((t, er) =>
                 {
-                    er.Raise(t, nameof(t.Elapsed));                    
+                    er.Raise(t, nameof(t.Elapsed));
                     t.Start(TimeSpan.FromMinutes(5));
                 },
                 "HomeTimer");
@@ -218,6 +234,340 @@
         {
             var w = this.web;
             w.Run<Navigator>(n => n.Present<ShutdownPresenter>());
+        }
+
+        private void ui_InstallServiceRequested()
+        {
+            var w = this.web;
+            if (!this.currentUserIsAdmin())
+            {
+                w.Run<Messenger>(m =>
+                {
+                    var response = UiHelpers.Read(
+                        m.Subscriber,
+                        () => m.Question(
+                            "The app needs to run as administrator first."
+                            + Environment.NewLine
+                            + "Please try again after the app is running as administrator."
+                            + Environment.NewLine
+                            + "Run the app as administrator?"));
+                    if (response == Response.Yes)
+                    {
+                        var psi = new ProcessStartInfo
+                        {
+                            UseShellExecute = true,
+                            Verb = "runas",
+                            WorkingDirectory = Environment.CurrentDirectory,
+                            FileName = Path.GetFileName(
+                        Assembly.GetEntryAssembly().Location)
+                        };
+
+                        Process.Start(psi);
+                        w.Run<Navigator>(n => n.Present<ShutdownPresenter>());
+                    }
+                });
+
+                return;
+            }
+
+            var p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.WorkingDirectory =
+                Path.GetDirectoryName(
+                    Assembly.GetExecutingAssembly()
+                    .Location);
+            p.StartInfo.FileName = Path.Combine(
+                Path.GetDirectoryName(
+                        System
+                        .Runtime
+                        .InteropServices
+                        .RuntimeEnvironment
+                        .GetRuntimeDirectory()),
+                @"installutil.exe");
+            p.StartInfo.Arguments =
+                nameof(xofz) +
+                '.' +
+                nameof(GoDaddyUpdater) +
+                ".Service.exe";
+            try
+            {
+                p.Start();
+                p.WaitForExit();
+            }
+            catch (Exception ex)
+            {
+                w.Run<Messenger>(m =>
+                {
+                    UiHelpers.Write(
+                        m.Subscriber,
+                        () => m.GiveError(
+                            "Error installing service."
+                            + Environment.NewLine
+                            + ex.GetType().ToString()
+                            + Environment.NewLine
+                            + ex.Message));
+                });
+            }
+
+            var ec = p.ExitCode;
+            if (ec == 0)
+            {
+                w.Run<Messenger>(m =>
+                {
+                    UiHelpers.Write(
+                        m.Subscriber,
+                        () => m.Inform("Service installed!"));
+                });
+                return;
+            }
+
+            w.Run<Messenger>(m =>
+            {
+                UiHelpers.Write(
+                    m.Subscriber,
+                    () => m.GiveError(
+                        "Error installing service."
+                        + Environment.NewLine
+                        + "Error code: " + ec));
+            });
+        }
+
+        private void ui_RefreshServiceRequested()
+        {
+            var w = this.web;
+            if (!this.currentUserIsAdmin())
+            {
+                w.Run<Messenger>(m =>
+                {
+                    var response = UiHelpers.Read(
+                        m.Subscriber,
+                        () => m.Question(
+                            "The app needs to run as administrator first."
+                            + Environment.NewLine
+                            + "Please try again after the app is running as administrator."
+                            + Environment.NewLine
+                            + "Run the app as administrator?"));
+                    if (response == Response.Yes)
+                    {
+                        var psi = new ProcessStartInfo
+                        {
+                            UseShellExecute = true,
+                            Verb = "runas",
+                            WorkingDirectory = Environment.CurrentDirectory,
+                            FileName = Path.GetFileName(
+                                Assembly.GetEntryAssembly().Location)
+                        };
+
+                        Process.Start(psi);
+                        w.Run<Navigator>(n => n.Present<ShutdownPresenter>());
+                    }
+                });
+
+                return;
+            }
+
+            var p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.WorkingDirectory =
+                Path.GetDirectoryName(
+                    Assembly.GetExecutingAssembly()
+                    .Location);
+            p.StartInfo.FileName = Path.Combine(
+                Path.GetDirectoryName(
+                        System
+                        .Runtime
+                        .InteropServices
+                        .RuntimeEnvironment
+                        .GetRuntimeDirectory()),
+                @"installutil.exe");
+            p.StartInfo.Arguments =
+                "/u " +
+                nameof(xofz) +
+                '.' +
+                nameof(GoDaddyUpdater) +
+                ".Service.exe";
+            try
+            {
+                p.Start();
+                p.WaitForExit();
+            }
+            catch (Exception ex)
+            {
+                w.Run<Messenger>(m =>
+                {
+                    UiHelpers.Write(
+                        m.Subscriber,
+                        () => m.GiveError(
+                            "Error refreshing service."
+                            + Environment.NewLine
+                            + ex.GetType().ToString()
+                            + Environment.NewLine
+                            + ex.Message));
+                });
+                return;
+            }
+
+            var ec = p.ExitCode;
+            if (ec != 0)
+            {
+                w.Run<Messenger>(m =>
+                {
+                    UiHelpers.Write(
+                        m.Subscriber,
+                        () => m.GiveError(
+                            "Error refreshing service."
+                            + Environment.NewLine
+                            + "Error code: " + ec));
+                });
+                return;
+            }
+
+            p.StartInfo.Arguments =
+                nameof(xofz) +
+                '.' +
+                nameof(GoDaddyUpdater) +
+                ".Service.exe";
+            try
+            {
+                p.Start();
+                p.WaitForExit();
+            }
+            catch (Exception ex)
+            {
+                w.Run<Messenger>(m =>
+                {
+                    UiHelpers.Write(
+                        m.Subscriber,
+                        () => m.GiveError(
+                            "Error refreshing service."
+                            + Environment.NewLine
+                            + ex.GetType().ToString()
+                            + Environment.NewLine
+                            + ex.Message));
+                });
+                return;
+            }
+
+            ec = p.ExitCode;
+            if (ec != 0)
+            {
+                w.Run<Messenger>(m =>
+                {
+                    UiHelpers.Write(
+                        m.Subscriber,
+                        () => m.GiveError(
+                            "Error refreshing service."
+                            + Environment.NewLine
+                            + "Error code: " + ec));
+                });
+                return;
+            }
+
+            w.Run<Messenger>(m =>
+            {
+                UiHelpers.Write(
+                    m.Subscriber,
+                    () => m.Inform(
+                        "Service refreshed!"));
+            });
+        }
+
+        private void ui_UninstallServiceRequested()
+        {
+            var w = this.web;
+            if (!this.currentUserIsAdmin())
+            {
+                w.Run<Messenger>(m =>
+                {
+                    var response = UiHelpers.Read(
+                        m.Subscriber,
+                        () => m.Question(
+                            "The app needs to run as administrator first."
+                            + Environment.NewLine
+                            + "Please try again after the app is running as administrator."
+                            + Environment.NewLine
+                            + "Run the app as administrator?"));
+                    if (response == Response.Yes)
+                    {
+                        var psi = new ProcessStartInfo
+                        {
+                            UseShellExecute = true,
+                            Verb = "runas",
+                            WorkingDirectory = Environment.CurrentDirectory,
+                            FileName = Path.GetFileName(
+                                Assembly.GetEntryAssembly().Location)
+                        };
+
+                        Process.Start(psi);
+                        w.Run<Navigator>(n => n.Present<ShutdownPresenter>());
+                    }
+                });
+
+                return;
+            }
+
+            var p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.WorkingDirectory =
+                Path.GetDirectoryName(
+                    Assembly.GetExecutingAssembly()
+                    .Location);
+            p.StartInfo.FileName = Path.Combine(
+                Path.GetDirectoryName(
+                        System
+                        .Runtime
+                        .InteropServices
+                        .RuntimeEnvironment
+                        .GetRuntimeDirectory()),
+                @"installutil.exe");
+            p.StartInfo.Arguments =
+                "/u " +
+                nameof(xofz) +
+                '.' +
+                nameof(GoDaddyUpdater) +
+                ".Service.exe";
+            try
+            {
+                p.Start();
+                p.WaitForExit();
+            }
+            catch (Exception ex)
+            {
+                w.Run<Messenger>(m =>
+                {
+                    UiHelpers.Write(
+                        m.Subscriber,
+                        () => m.GiveError(
+                            "Error uninstalling service."
+                            + Environment.NewLine
+                            + ex.GetType().ToString()
+                            + Environment.NewLine
+                            + ex.Message));
+                });
+                return;
+            }
+
+            var ec = p.ExitCode;
+            if (ec != 0)
+            {
+                w.Run<Messenger>(m =>
+                {
+                    UiHelpers.Write(
+                        m.Subscriber,
+                        () => m.GiveError(
+                            "Error uninstalling service."
+                            + Environment.NewLine
+                            + "Error code: " + ec));
+                });
+                return;
+            }
+
+            w.Run<Messenger>(m =>
+            {
+                UiHelpers.Write(
+                  m.Subscriber,
+                  () => m.Inform("Service uninstalled."));
+            });
         }
 
         private void timer_Elapsed()
@@ -414,6 +764,14 @@
             });
 
             h.Set();
+        }
+
+        private bool currentUserIsAdmin()
+        {
+            var principle = new WindowsPrincipal(
+                WindowsIdentity.GetCurrent());
+            return principle.IsInRole(
+                WindowsBuiltInRole.Administrator);
         }
 
         private long setupIf1;

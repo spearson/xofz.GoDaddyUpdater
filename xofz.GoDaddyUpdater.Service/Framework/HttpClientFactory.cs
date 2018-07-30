@@ -1,4 +1,4 @@
-﻿namespace xofz.GoDaddyUpdater.Framework
+﻿namespace xofz.GoDaddyUpdater.Service.Framework
 {
     using System.Net.Http;
     using System.Net.Http.Headers;

@@ -7,8 +7,10 @@
   <PropertyGroup>
     <Version>$(BUILD_NUMBER)</Version>
     <ProjectName>xofz.GoDaddyUpdater</ProjectName>
+    <ServiceProjectName>$(ProjectName).Service</ServiceProjectName>
     <BuildDir>$(ProjectName)\bin\Release</BuildDir>
-    <DeployFolder>C:\Dropbox\xofz.Apps\GoDaddyUpdater\$(ProjectName)-$(Version)</DeployFolder>
+    <ServiceBuildDir>$(ServiceProjectName)\bin\Release</ServiceBuildDir>
+    <DeployFolder>C:\Dev\GDU test build</DeployFolder>
   </PropertyGroup>
 
 
@@ -27,11 +29,26 @@
       Guid="71b868ab-7f48-4a64-b3c4-a2cb9f26bcaa"
       AssemblyVersion="$(Version)"
       AssemblyFileVersion="$(Version)" />
+   <AssemblyInfo
+      CodeLanguage="CS" 
+      OutputFile="$(ServiceProjectName)\Properties\AssemblyInfo.cs"
+      AssemblyTitle="$(ServiceProjectName)" 
+      AssemblyDescription="This app synchronizes the current LAN's external IP to a subdomain using GoDaddy's nameservers."
+      AssemblyConfiguration=""
+      AssemblyCompany="X of Z"
+      AssemblyProduct="GoDaddyUpdater"
+      AssemblyCopyright="Copyright (c) X of Z"
+      AssemblyTrademark=""
+      ComVisible="false"
+      Guid="2dcebd2b-86e0-45c0-9d92-3148c20dabbe"
+      AssemblyVersion="$(Version)"
+      AssemblyFileVersion="$(Version)" />
   </Target>
 
 
   <Target Name="Build" DependsOnTargets="ChangeVersion">
     <RemoveDir Directories="$(BuildDir)" />
+    <RemoveDir Directories="$(ServiceBuildDir)" />
     <MSBuild Projects="$(ProjectName).sln" Targets="Build" Properties="Configuration=Release;Platform=Any CPU" />
   </Target>
   
@@ -41,6 +58,7 @@
     <ItemGroup>
       <FilesToMove Include="$(BuildDir)\$(ProjectName).exe" />
       <FilesToMove Include="$(BuildDir)\$(ProjectName).exe.config" />
+      <FilesToMove Include="$(ServiceBuildDir)\$(ServiceProjectName).exe" />
     </ItemGroup>
     <MV SourceFiles="@(FilesToMove)" DestinationFolder="$(DeployFolder)" />
   </Target>

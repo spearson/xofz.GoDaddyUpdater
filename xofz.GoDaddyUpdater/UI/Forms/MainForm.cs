@@ -1,9 +1,14 @@
 ﻿namespace xofz.GoDaddyUpdater.UI.Forms
 {
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Reflection;
     using System.Threading;
     using System.Windows.Forms;
     using xofz.UI.Forms;
     using xofz.GoDaddyUpdater.Properties;
+    using Action = xofz.Action;
     
 
     public partial class MainForm 
@@ -17,10 +22,15 @@
             var ni = this.notifyIcon;
             ni.Icon = Resources.GoDaddyUpdater_Icon;
             var cm = new ContextMenu();
-            var exitMenuItem = new MenuItem("Exit");
+            var exitMenuItem = new MenuItem("E&xit");
             exitMenuItem.Click += this.exitMenuItem_Click;
             cm.MenuItems.Add(exitMenuItem);
             ni.ContextMenu = cm;
+
+            /*var screenBoundsRectangle = Screen.PrimaryScreen.Bounds;
+            this.Location = new System.Drawing.Point(
+                screenBoundsRectangle.Right - this.Width - 100,
+                screenBoundsRectangle.Bottom - this.Height - 100);*/
 
             var h = this.Handle;
         }
@@ -36,6 +46,12 @@
         public event Action CopySyncedIpKeyTapped;
 
         public event Action ExitRequested;
+
+        public event Action InstallServiceRequested;
+
+        public event Action RefreshServiceRequested;
+
+        public event Action UninstallServiceRequested;
 
         string HomeUi.Hostname
         {
@@ -225,6 +241,16 @@
             object sender, 
             System.EventArgs e)
         {
+            this.exit();
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            this.exit();
+        }
+
+        private void exit()
+        {
             var er = this.ExitRequested;
             if (er == null)
             {
@@ -234,6 +260,42 @@
             this.notifyIcon.Visible = false;
             ThreadPool.QueueUserWorkItem(
                 o => er.Invoke());
+        }
+
+        private void installServiceToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            var isr = this.InstallServiceRequested;
+            if(isr == null)
+            {
+                return;
+            }
+
+            ThreadPool.QueueUserWorkItem(
+                o => isr.Invoke());
+        }
+
+        private void refreshServiceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var rsr = this.RefreshServiceRequested;
+            if (rsr == null)
+            {
+                return;
+            }
+
+            ThreadPool.QueueUserWorkItem(
+                o => rsr.Invoke());
+        }
+
+        private void uninstallServiceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var usr = this.UninstallServiceRequested;
+            if (usr == null)
+            {
+                return;
+            }
+
+            ThreadPool.QueueUserWorkItem(
+                o => usr.Invoke());
         }
     }
 }

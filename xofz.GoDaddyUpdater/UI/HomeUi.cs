@@ -16,6 +16,12 @@
 
         event Action ExitRequested;
 
+        event Action InstallServiceRequested;
+
+        event Action RefreshServiceRequested;
+
+        event Action UninstallServiceRequested;
+
         string Hostname { get; set; }
 
         string CurrentIP { get; set; }
