@@ -10,7 +10,7 @@
     <ServiceProjectName>$(ProjectName).Service</ServiceProjectName>
     <BuildDir>$(ProjectName)\bin\Release</BuildDir>
     <ServiceBuildDir>$(ServiceProjectName)\bin\Release</ServiceBuildDir>
-    <DeployFolder>C:\Dev\GDU test build</DeployFolder>
+    <DeployFolder>C:\Dropbox\xofz.Apps\GoDaddyUpdater\$(ProjectName)-$(Version)</DeployFolder>
   </PropertyGroup>
 
 
