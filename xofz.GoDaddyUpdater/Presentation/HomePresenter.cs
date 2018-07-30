@@ -263,6 +263,10 @@
                         };
 
                         Process.Start(psi);
+                        UiHelpers.Write(
+                            this.ui,
+                            () => this.ui.HideNotifyIcon());
+                        this.ui.WriteFinished.WaitOne();
                         w.Run<Navigator>(n => n.Present<ShutdownPresenter>());
                     }
                 });
@@ -359,6 +363,10 @@
                         };
 
                         Process.Start(psi);
+                        UiHelpers.Write(
+                            this.ui,
+                            () => this.ui.HideNotifyIcon());
+                        this.ui.WriteFinished.WaitOne();
                         w.Run<Navigator>(n => n.Present<ShutdownPresenter>());
                     }
                 });
@@ -499,6 +507,10 @@
                         };
 
                         Process.Start(psi);
+                        UiHelpers.Write(
+                            this.ui,
+                            () => this.ui.HideNotifyIcon());
+                        this.ui.WriteFinished.WaitOne();
                         w.Run<Navigator>(n => n.Present<ShutdownPresenter>());
                     }
                 });

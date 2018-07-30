@@ -20,8 +20,24 @@
                 .Append(nameof(GoDaddyUpdater))
                 .Append(".exe")
                 .ToString();
-            var config = ConfigurationManager.OpenExeConfiguration(
-                exePath);
+            Configuration config;
+            try
+            {
+                config = ConfigurationManager.OpenExeConfiguration(exePath);
+            }
+            catch
+            {
+                exePath = new StringBuilder()
+                .Append(Environment.CurrentDirectory)
+                .Append("\\")
+                .Append(nameof(xofz))
+                .Append('.')
+                .Append(nameof(GoDaddyUpdater))
+                .Append(".exe")
+                .ToString();
+                config = ConfigurationManager.OpenExeConfiguration(exePath);
+            }
+
             var section = config
                 .SectionGroups["applicationSettings"]
                 .Sections[

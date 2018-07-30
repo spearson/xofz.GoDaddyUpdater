@@ -156,6 +156,11 @@
             set => this.coreVersionLabel.Text = CoreVersionFlavorText + value;
         }
 
+        void HomeUi.HideNotifyIcon()
+        {
+            this.notifyIcon.Visible = false;
+        }
+
         private void startSyncingKey_Click(object sender, System.EventArgs e)
         {
             var sskt = this.StartSyncingKeyTapped;

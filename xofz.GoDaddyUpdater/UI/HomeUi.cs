@@ -39,5 +39,7 @@
         bool StartSyncingKeyEnabled { get; set; }
 
         bool StopSyncingKeyEnabled { get; set; }
+
+        void HideNotifyIcon();
     }
 }

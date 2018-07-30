@@ -1,8 +1,8 @@
 ﻿namespace xofz.GoDaddyUpdater.Service
 {
+    using System;
     using System.Collections;
     using System.ComponentModel;
-    using System.Configuration.Install;
     using System.ServiceProcess;
     using xofz.GoDaddyUpdater.Service.Framework;
     using xofz.GoDaddyUpdater.Service.Framework.GlobalSettingsProviders;
@@ -26,23 +26,30 @@
                 }
 
                 var installer = (ServiceInstaller)anyInstaller;
-                installer.ServiceName = "GoDaddyUpdater.Service ["
+                installer.DisplayName = "GoDaddyUpdater.Service ["
                     + settings.Subdomain
                     + "."
                     + settings.Domain
-                    + "]";
-                installer.DisplayName = installer.ServiceName;
+                    + "] ("
+                    + settings.HttpExternalIpProviderUri
+                    + ")";
+                installer.ServiceName = "gdu."
+                    + settings.Subdomain
+                    + "."
+                    + settings.Domain
+                    + "."
+                    + settings
+                        .HttpExternalIpProviderUri
+                        .Replace('/', '-');
+                
                 break;
             }
         }
 
         protected override void OnAfterInstall(IDictionary savedState)
         {
-            var installer = this.updaterServiceInstaller;
             base.OnAfterInstall(savedState);
-            System.IO.File.WriteAllText(
-                "service name.txt",
-                installer.ServiceName);
+            var installer = this.updaterServiceInstaller;
             using (var sc = new ServiceController(installer.ServiceName))
             {
                 sc.Start();
