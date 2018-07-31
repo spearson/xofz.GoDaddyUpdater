@@ -24,6 +24,8 @@
 
         string Hostname { get; set; }
 
+        string IpProviderUri { get; set; }
+
         string CurrentIP { get; set; }
 
         string SyncedIP { get; set; }

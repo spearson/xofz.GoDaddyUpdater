@@ -2,6 +2,8 @@
 {
     public class GlobalSettingsHolder
     {
+        public virtual string ServiceAttribution { get; set; }
+
         public virtual string PublicApiKey { get; set; }
 
         public virtual string PrivateApiKey { get; set; }

@@ -107,6 +107,10 @@
                 UiHelpers.Write(
                     this.ui,
                     () => this.ui.Hostname = hostname);
+                var ipProviderUri = s.HttpExternalIpProviderUri;
+                UiHelpers.Write(
+                    this.ui,
+                    () => this.ui.IpProviderUri = ipProviderUri);
             });
 
             w.Run<VersionReader>(vr =>
@@ -121,6 +125,36 @@
                         this.ui.CoreVersion = coreVersion;
                     });
             });
+
+            w.Run<HttpClientFactory, GlobalSettingsHolder>(
+                (factory, settings) =>
+                {
+                    string currentIP;
+                    using (var hc = factory.Create())
+                    {
+                        hc.Timeout = TimeSpan.FromMilliseconds(3000);
+                        Task<string> currentIpTask;
+                        try
+                        {
+                            currentIpTask = hc.GetStringAsync(
+                                settings.HttpExternalIpProviderUri);
+                            currentIpTask.Wait();
+                        }
+                        catch
+                        {
+                            currentIP = cantReadIpMessage;
+                            goto setCurrentIP;
+                        }
+
+                        currentIP = currentIpTask.Result.Trim();
+                    }
+
+                    setCurrentIP:
+                    UiHelpers.Write(
+                        this.ui,
+                        () => this.ui.CurrentIP = currentIP);
+                    this.lastCurrentIP = currentIP;
+                });
 
             w.Run<Navigator>(n => n.RegisterPresenter(this));
         }
@@ -649,6 +683,7 @@
                     hc.Timeout = TimeSpan.FromMilliseconds(5000);
                     Record record;
                     var task = hc.GetAsync(uri);
+                    bool syncedByService = false;
                     try
                     {
                         task.Wait();
@@ -695,9 +730,11 @@
 
                     record = records.First();
                     syncedIP = record.data;
-                    if (syncedIP == currentIP)
+                    if (syncedIP == currentIP
+                        && this.lastCurrentIP != currentIP)
                     {
-                        goto setSyncedIP;
+                        syncedByService = true;
+                        goto afterSync;
                     }
 
                     if (currentIP == cantReadIpMessage)
@@ -727,9 +764,16 @@
                     syncTask.Wait();
                     response = task.Result;
 
-                    if (response.IsSuccessStatusCode)
+                    afterSync:
+                    if (response.IsSuccessStatusCode || syncedByService)
                     {
                         var lastSynced = DateTime.Now.ToString();
+                        if (syncedByService)
+                        {
+                            lastSynced += Environment.NewLine;
+                            lastSynced += settings.ServiceAttribution;
+                        }
+
                         UiHelpers.Write(
                             this.ui,
                             () => this.ui.LastSynced = lastSynced);
@@ -775,6 +819,7 @@
                     () => this.ui.SyncedIP = syncedIP);
             });
 
+            this.lastCurrentIP = currentIP;
             h.Set();
         }
 
@@ -787,6 +832,7 @@
         }
 
         private long setupIf1;
+        private string lastCurrentIP;
         private readonly HomeUi ui;
         private readonly MethodWeb web;
         private readonly ManualResetEvent timerHandlerFinished;

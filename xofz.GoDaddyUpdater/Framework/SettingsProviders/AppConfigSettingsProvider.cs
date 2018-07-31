@@ -8,12 +8,13 @@
         {
             return new GlobalSettingsHolder()
             {
+                ServiceAttribution = @"(by Service)",
                 PublicApiKey = Settings.Default.PublicApiKey,
                 PrivateApiKey = Settings.Default.PrivateApiKey,
                 Domain = Settings.Default.Domain,
                 Subdomain = Settings.Default.Subdomain,
                 HttpExternalIpProviderUri = Settings.Default.HttpExternalIpProviderUri,
-                AutoStart = Settings.Default.AutoStart
+                AutoStart = Settings.Default.AutoStart                
             };
         }
     }

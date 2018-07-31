@@ -27,10 +27,10 @@
             cm.MenuItems.Add(exitMenuItem);
             ni.ContextMenu = cm;
 
-            /*var screenBoundsRectangle = Screen.PrimaryScreen.Bounds;
+            var screenBoundsRectangle = Screen.PrimaryScreen.Bounds;
             this.Location = new System.Drawing.Point(
                 screenBoundsRectangle.Right - this.Width - 100,
-                screenBoundsRectangle.Bottom - this.Height - 100);*/
+                screenBoundsRectangle.Bottom - this.Height - 225);
 
             var h = this.Handle;
         }
@@ -63,6 +63,29 @@
                 this.notifyIcon.Text = @"GoDaddyUpdater [" + value + "]";
             }
         }
+
+        string HomeUi.IpProviderUri
+        {
+            get => this.ipProviderUri;
+
+            set
+            {
+                this.setIpProviderUri(value);
+                this.notifyIcon.Text = 
+                    @"GoDaddyUpdater [" 
+                    + this.hostnameLabel.Text
+                    + "] ("
+                    + value
+                    + ")";
+            }
+        }
+
+        private void setIpProviderUri(string ipProviderUri)
+        {
+            this.ipProviderUri = ipProviderUri;
+        }
+
+        private string ipProviderUri;
 
         string HomeUi.CurrentIP
         {
