@@ -126,36 +126,6 @@
                     });
             });
 
-            w.Run<HttpClientFactory, GlobalSettingsHolder>(
-                (factory, settings) =>
-                {
-                    string currentIP;
-                    using (var hc = factory.Create())
-                    {
-                        hc.Timeout = TimeSpan.FromMilliseconds(3000);
-                        Task<string> currentIpTask;
-                        try
-                        {
-                            currentIpTask = hc.GetStringAsync(
-                                settings.HttpExternalIpProviderUri);
-                            currentIpTask.Wait();
-                        }
-                        catch
-                        {
-                            currentIP = cantReadIpMessage;
-                            goto setCurrentIP;
-                        }
-
-                        currentIP = currentIpTask.Result.Trim();
-                    }
-
-                    setCurrentIP:
-                    UiHelpers.Write(
-                        this.ui,
-                        () => this.ui.CurrentIP = currentIP);
-                    this.lastCurrentIP = currentIP;
-                });
-
             w.Run<Navigator>(n => n.RegisterPresenter(this));
         }
 
@@ -730,11 +700,16 @@
 
                     record = records.First();
                     syncedIP = record.data;
-                    if (syncedIP == currentIP
-                        && this.lastCurrentIP != currentIP)
+                    if (syncedIP == currentIP)
                     {
-                        syncedByService = true;
-                        goto afterSync;
+                        var lcip = this.lastCurrentIP;
+                        if (lcip != currentIP && lcip != default(string))
+                        {
+                            syncedByService = true;
+                            goto afterSync;
+                        }
+
+                        goto setSyncedIP;
                     }
 
                     if (currentIP == cantReadIpMessage)
