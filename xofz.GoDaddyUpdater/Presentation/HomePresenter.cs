@@ -819,7 +819,11 @@
                     () => this.ui.SyncedIP = syncedIP);
             });
 
-            this.lastCurrentIP = currentIP;
+            if (currentIP != cantReadIpMessage)
+            {
+                this.lastCurrentIP = currentIP;
+            }
+            
             h.Set();
         }
 
