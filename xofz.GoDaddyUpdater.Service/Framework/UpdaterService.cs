@@ -37,9 +37,9 @@
                 // must match value in ProjectInstaller ctor
                 this.ServiceName = "gdu."
                     + settings.Subdomain
-                    + "."
+                    + '.'
                     + settings.Domain
-                    + "."
+                    + '.'
                     + settings
                         .HttpExternalIpProviderUri
                         .Replace('/', '-');

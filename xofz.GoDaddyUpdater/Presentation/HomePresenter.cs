@@ -72,10 +72,6 @@
                     this.ui_InstallServiceRequested);
                 subscriber.Subscribe(
                     this.ui,
-                    nameof(this.ui.RefreshServiceRequested),
-                    this.ui_RefreshServiceRequested);
-                subscriber.Subscribe(
-                    this.ui,
                     nameof(this.ui.UninstallServiceRequested),
                     this.ui_UninstallServiceRequested);
                 w.Run<xofz.Framework.Timer>(t =>
@@ -326,6 +322,9 @@
                         m.Subscriber,
                         () => m.Inform("Service installed!"));
                 });
+                UiHelpers.Write(
+                    this.ui,
+                    () => this.ui.ServiceInstalled = true);
                 return;
             }
 
@@ -337,150 +336,6 @@
                         "Error installing service."
                         + Environment.NewLine
                         + "Error code: " + ec));
-            });
-        }
-
-        private void ui_RefreshServiceRequested()
-        {
-            var w = this.web;
-            if (!this.currentUserIsAdmin())
-            {
-                w.Run<Messenger>(m =>
-                {
-                    var response = UiHelpers.Read(
-                        m.Subscriber,
-                        () => m.Question(
-                            "The app needs to run as administrator first."
-                            + Environment.NewLine
-                            + "Please try again after the app is running as administrator."
-                            + Environment.NewLine
-                            + "Run the app as administrator?"));
-                    if (response == Response.Yes)
-                    {
-                        var psi = new ProcessStartInfo
-                        {
-                            UseShellExecute = true,
-                            Verb = "runas",
-                            WorkingDirectory = Environment.CurrentDirectory,
-                            FileName = Path.GetFileName(
-                                Assembly.GetEntryAssembly().Location)
-                        };
-
-                        Process.Start(psi);
-                        UiHelpers.Write(
-                            this.ui,
-                            () => this.ui.HideNotifyIcon());
-                        this.ui.WriteFinished.WaitOne();
-                        w.Run<Navigator>(n => n.Present<ShutdownPresenter>());
-                    }
-                });
-
-                return;
-            }
-
-            var p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.WorkingDirectory =
-                Path.GetDirectoryName(
-                    Assembly.GetExecutingAssembly()
-                    .Location);
-            p.StartInfo.FileName = Path.Combine(
-                Path.GetDirectoryName(
-                        System
-                        .Runtime
-                        .InteropServices
-                        .RuntimeEnvironment
-                        .GetRuntimeDirectory()),
-                @"installutil.exe");
-            p.StartInfo.Arguments =
-                "/u " +
-                nameof(xofz) +
-                '.' +
-                nameof(GoDaddyUpdater) +
-                ".Service.exe";
-            try
-            {
-                p.Start();
-                p.WaitForExit();
-            }
-            catch (Exception ex)
-            {
-                w.Run<Messenger>(m =>
-                {
-                    UiHelpers.Write(
-                        m.Subscriber,
-                        () => m.GiveError(
-                            "Error refreshing service."
-                            + Environment.NewLine
-                            + ex.GetType().ToString()
-                            + Environment.NewLine
-                            + ex.Message));
-                });
-                return;
-            }
-
-            var ec = p.ExitCode;
-            if (ec != 0)
-            {
-                w.Run<Messenger>(m =>
-                {
-                    UiHelpers.Write(
-                        m.Subscriber,
-                        () => m.GiveError(
-                            "Error refreshing service."
-                            + Environment.NewLine
-                            + "Error code: " + ec));
-                });
-                return;
-            }
-
-            p.StartInfo.Arguments =
-                nameof(xofz) +
-                '.' +
-                nameof(GoDaddyUpdater) +
-                ".Service.exe";
-            try
-            {
-                p.Start();
-                p.WaitForExit();
-            }
-            catch (Exception ex)
-            {
-                w.Run<Messenger>(m =>
-                {
-                    UiHelpers.Write(
-                        m.Subscriber,
-                        () => m.GiveError(
-                            "Error refreshing service."
-                            + Environment.NewLine
-                            + ex.GetType().ToString()
-                            + Environment.NewLine
-                            + ex.Message));
-                });
-                return;
-            }
-
-            ec = p.ExitCode;
-            if (ec != 0)
-            {
-                w.Run<Messenger>(m =>
-                {
-                    UiHelpers.Write(
-                        m.Subscriber,
-                        () => m.GiveError(
-                            "Error refreshing service."
-                            + Environment.NewLine
-                            + "Error code: " + ec));
-                });
-                return;
-            }
-
-            w.Run<Messenger>(m =>
-            {
-                UiHelpers.Write(
-                    m.Subscriber,
-                    () => m.Inform(
-                        "Service refreshed!"));
             });
         }
 
@@ -584,6 +439,9 @@
                   m.Subscriber,
                   () => m.Inform("Service uninstalled."));
             });
+            UiHelpers.Write(
+                    this.ui,
+                    () => this.ui.ServiceInstalled = false);
         }
 
         private void timer_Elapsed()
@@ -798,6 +656,14 @@
             {
                 this.lastCurrentIP = currentIP;
             }
+
+            w.Run<ServiceChecker>(checker =>
+            {
+                var exists = checker.ServiceExists();
+                UiHelpers.Write(
+                    this.ui,
+                    () => this.ui.ServiceInstalled = exists);
+            });
             
             h.Set();
         }

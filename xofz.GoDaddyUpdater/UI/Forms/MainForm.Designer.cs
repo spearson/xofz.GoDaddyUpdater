@@ -50,7 +50,6 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.installServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.refreshServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uninstallServiceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             label1 = new System.Windows.Forms.Label();
@@ -306,7 +305,7 @@
             this.fileMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(524, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(524, 32);
             this.menuStrip1.TabIndex = 108;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -314,38 +313,34 @@
             // 
             this.fileMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.installServiceToolStripMenuItem,
-            this.refreshServiceToolStripMenuItem,
             this.uninstallServiceToolStripMenuItem,
             this.exitToolStripMenuItem});
+            this.fileMenuItem.Font = new System.Drawing.Font("Consolas", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.fileMenuItem.Name = "fileMenuItem";
-            this.fileMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileMenuItem.Size = new System.Drawing.Size(70, 28);
             this.fileMenuItem.Text = "File";
             // 
             // installServiceToolStripMenuItem
             // 
+            this.installServiceToolStripMenuItem.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.installServiceToolStripMenuItem.Name = "installServiceToolStripMenuItem";
-            this.installServiceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.installServiceToolStripMenuItem.Size = new System.Drawing.Size(250, 26);
             this.installServiceToolStripMenuItem.Text = "&Install Service";
             this.installServiceToolStripMenuItem.Click += new System.EventHandler(this.installServiceToolStripMenuItem_Click);
             // 
-            // refreshServiceToolStripMenuItem
-            // 
-            this.refreshServiceToolStripMenuItem.Name = "refreshServiceToolStripMenuItem";
-            this.refreshServiceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.refreshServiceToolStripMenuItem.Text = "&Refresh Service";
-            this.refreshServiceToolStripMenuItem.Click += new System.EventHandler(this.refreshServiceToolStripMenuItem_Click);
-            // 
             // uninstallServiceToolStripMenuItem
             // 
+            this.uninstallServiceToolStripMenuItem.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.uninstallServiceToolStripMenuItem.Name = "uninstallServiceToolStripMenuItem";
-            this.uninstallServiceToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.uninstallServiceToolStripMenuItem.Size = new System.Drawing.Size(250, 26);
             this.uninstallServiceToolStripMenuItem.Text = "&Uninstall Service";
             this.uninstallServiceToolStripMenuItem.Click += new System.EventHandler(this.uninstallServiceToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
+            this.exitToolStripMenuItem.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(250, 26);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -402,7 +397,6 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem installServiceToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem refreshServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem uninstallServiceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }

@@ -44,6 +44,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="xofz.Core98">
       <HintPath>C:\Dropbox\Libraries\xofz.Core98\xofz.Core98.dll</HintPath>
@@ -54,6 +55,7 @@
     <Compile Include="Framework\Record.cs" />
     <Compile Include="Framework\GlobalSettingsHolder.cs" />
     <Compile Include="Framework\HttpClientFactory.cs" />
+    <Compile Include="Framework\ServiceChecker.cs" />
     <Compile Include="Framework\SettingsProvider.cs" />
     <Compile Include="Framework\SettingsProviders\AppConfigSettingsProvider.cs" />
     <Compile Include="Presentation\HomePresenter.cs" />

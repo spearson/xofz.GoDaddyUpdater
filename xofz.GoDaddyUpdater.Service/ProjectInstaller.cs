@@ -28,16 +28,16 @@
                 var installer = (ServiceInstaller)anyInstaller;
                 installer.DisplayName = "GoDaddyUpdater.Service ["
                     + settings.Subdomain
-                    + "."
+                    + '.'
                     + settings.Domain
                     + "] ("
                     + settings.HttpExternalIpProviderUri
-                    + ")";
+                    + ')';
                 installer.ServiceName = "gdu."
                     + settings.Subdomain
-                    + "."
+                    + '.'
                     + settings.Domain
-                    + "."
+                    + '.'
                     + settings
                         .HttpExternalIpProviderUri
                         .Replace('/', '-');

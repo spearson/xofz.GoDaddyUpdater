@@ -18,8 +18,6 @@
 
         event Action InstallServiceRequested;
 
-        event Action RefreshServiceRequested;
-
         event Action UninstallServiceRequested;
 
         string Hostname { get; set; }
@@ -41,6 +39,8 @@
         bool StartSyncingKeyEnabled { get; set; }
 
         bool StopSyncingKeyEnabled { get; set; }
+
+        bool ServiceInstalled { get; set; }
 
         void HideNotifyIcon();
     }

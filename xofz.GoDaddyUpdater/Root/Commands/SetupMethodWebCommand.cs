@@ -54,6 +54,8 @@
             w.RegisterDependency(
                 new VersionReader(
                     Assembly.GetExecutingAssembly()));
+            w.RegisterDependency(
+                new ServiceChecker(w));
         }
 
         private MethodWeb web;

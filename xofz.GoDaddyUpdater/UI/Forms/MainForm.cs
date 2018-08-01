@@ -1,6 +1,7 @@
 ﻿namespace xofz.GoDaddyUpdater.UI.Forms
 {
     using System;
+    using System.Drawing;
     using System.Diagnostics;
     using System.IO;
     using System.Reflection;
@@ -48,8 +49,6 @@
         public event Action ExitRequested;
 
         public event Action InstallServiceRequested;
-
-        public event Action RefreshServiceRequested;
 
         public event Action UninstallServiceRequested;
 
@@ -179,6 +178,20 @@
             set => this.coreVersionLabel.Text = CoreVersionFlavorText + value;
         }
 
+        bool HomeUi.ServiceInstalled
+        {
+            get => this.serviceInstalled;
+
+            set
+            {
+                this.serviceInstalled = value;
+                this.installServiceToolStripMenuItem.Enabled = !value;
+                this.uninstallServiceToolStripMenuItem.Enabled = value;
+            }
+        }
+
+        private bool serviceInstalled;
+
         void HomeUi.HideNotifyIcon()
         {
             this.notifyIcon.Visible = false;
@@ -304,14 +317,6 @@
 
         private void refreshServiceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var rsr = this.RefreshServiceRequested;
-            if (rsr == null)
-            {
-                return;
-            }
-
-            ThreadPool.QueueUserWorkItem(
-                o => rsr.Invoke());
         }
 
         private void uninstallServiceToolStripMenuItem_Click(object sender, EventArgs e)
