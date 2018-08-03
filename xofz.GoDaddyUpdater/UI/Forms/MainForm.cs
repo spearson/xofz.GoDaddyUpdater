@@ -252,8 +252,13 @@
             ThreadPool.QueueUserWorkItem(o => csikt.Invoke());
         }
 
-        private void notifyIcon_Click(object sender, System.EventArgs e)
+        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
         {
+            if (e.Button != MouseButtons.Left)
+            {
+                return;
+            }
+
             if (this.Visible)
             {
                 if (this.WindowState == FormWindowState.Minimized)
@@ -313,10 +318,6 @@
 
             ThreadPool.QueueUserWorkItem(
                 o => isr.Invoke());
-        }
-
-        private void refreshServiceToolStripMenuItem_Click(object sender, EventArgs e)
-        {
         }
 
         private void uninstallServiceToolStripMenuItem_Click(object sender, EventArgs e)

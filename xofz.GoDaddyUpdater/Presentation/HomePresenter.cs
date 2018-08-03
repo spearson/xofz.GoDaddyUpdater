@@ -594,11 +594,23 @@
                     var syncTask = hc.PutAsync(
                         uri,
                         content);
-                    syncTask.Wait();
-                    response = task.Result;
+                    try
+                    {
+                        syncTask.Wait();
+                    }
+                    catch (Exception ex)
+                    {
+                        syncedIP = "Error syncing. "
+                            + ex.InnerException?.GetType()
+                            + ": "
+                            + ex.InnerException?.Message;
+                        goto setSyncedIP;
+                    }
+                    
+                    response = syncTask.Result;
 
                     afterSync:
-                    if (response.IsSuccessStatusCode || syncedByService)
+                    if (syncedByService || response.IsSuccessStatusCode)
                     {
                         var lastSynced = DateTime.Now.ToString();
                         if (syncedByService)
