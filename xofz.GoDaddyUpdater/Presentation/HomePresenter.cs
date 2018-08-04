@@ -479,9 +479,15 @@
                     () => this.ui.CurrentIP = currentIP);
             });
 
-            w.Run<HttpClientFactory, GlobalSettingsHolder>(
-                (factory, settings) =>
+            w.Run<
+                HttpClientFactory, 
+                GlobalSettingsHolder,
+                Messages>(
+                (factory, settings, messages) =>
             {
+                var ipTypeUnknownMessage = messages.IpTypeUnknown;
+                var errorReadingFromDnsMessage = messages.ErrorReadingFromDns;
+                var errorSyncingMessage = messages.ErrorSyncing;
                 string syncedIP;
                 IPAddress currentAddress;
                 bool aaaa;
@@ -493,7 +499,7 @@
                 }
                 else
                 {
-                    syncedIP = "Could not tell if IP is IPv4 or IPv6 address.";
+                    syncedIP = ipTypeUnknownMessage;
                     goto setSyncedIP;
                 }
 
@@ -518,7 +524,7 @@
                     }
                     catch
                     {
-                        syncedIP = @"Error reading synced IP from DNS.";
+                        syncedIP = errorReadingFromDnsMessage;
                         goto setSyncedIP;
                     }
 
@@ -600,7 +606,7 @@
                     }
                     catch (Exception ex)
                     {
-                        syncedIP = "Error syncing. "
+                        syncedIP = errorSyncingMessage
                             + ex.InnerException?.GetType()
                             + ": "
                             + ex.InnerException?.Message;
@@ -662,6 +668,22 @@
                 UiHelpers.Write(
                     this.ui,
                     () => this.ui.SyncedIP = syncedIP);
+
+                if (syncedIP == ipTypeUnknownMessage)
+                {
+                    return;
+                }
+
+                if (syncedIP == errorReadingFromDnsMessage)
+                {
+                    return;
+                }
+
+                if (syncedIP.Contains(errorSyncingMessage))
+                {
+                    return;
+                }
+
                 this.setLastSyncedIP(syncedIP);
             });
 

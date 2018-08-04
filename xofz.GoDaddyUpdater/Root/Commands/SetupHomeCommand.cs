@@ -35,6 +35,16 @@
                 "HomeTimer");
             w.RegisterDependency(
                 this.clipboardCopier);
+            w.RegisterDependency(
+                new Messages
+                {
+                    IpTypeUnknown =
+                        "Could not tell if IP is IPv4 or IPv6 address.",
+                    ErrorReadingFromDns =
+                        "Error reading synced IP from DNS.",
+                    ErrorSyncing =
+                        "Error syncing. "
+                });
         }
 
         private readonly HomeUi ui;

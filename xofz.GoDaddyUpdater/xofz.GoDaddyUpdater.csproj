@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Framework\ClipboardCopier.cs" />
+    <Compile Include="Framework\Messages.cs" />
     <Compile Include="Framework\Record.cs" />
     <Compile Include="Framework\GlobalSettingsHolder.cs" />
     <Compile Include="Framework\HttpClientFactory.cs" />
