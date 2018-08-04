@@ -560,8 +560,8 @@
                     syncedIP = record.data;
                     if (syncedIP == currentIP)
                     {
-                        var lcip = this.lastCurrentIP;
-                        if (lcip != currentIP && lcip != default(string))
+                        var lsip = this.lastSyncedIP;
+                        if (lsip != currentIP && lsip != default(string))
                         {
                             syncedByService = true;
                             goto afterSync;
@@ -662,12 +662,8 @@
                 UiHelpers.Write(
                     this.ui,
                     () => this.ui.SyncedIP = syncedIP);
+                this.setLastSyncedIP(syncedIP);
             });
-
-            if (currentIP != cantReadIpMessage)
-            {
-                this.lastCurrentIP = currentIP;
-            }
 
             w.Run<ServiceChecker>(checker =>
             {
@@ -680,6 +676,11 @@
             h.Set();
         }
 
+        private void setLastSyncedIP(string lastSyncedIP)
+        {
+            this.lastSyncedIP = lastSyncedIP;
+        }
+
         private bool currentUserIsAdmin()
         {
             var principle = new WindowsPrincipal(
@@ -689,7 +690,7 @@
         }
 
         private long setupIf1;
-        private string lastCurrentIP;
+        private string lastSyncedIP;
         private readonly HomeUi ui;
         private readonly MethodWeb web;
         private readonly ManualResetEvent timerHandlerFinished;
