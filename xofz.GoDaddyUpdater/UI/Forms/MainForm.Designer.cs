@@ -371,7 +371,7 @@
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "X of Z GoDaddyUpdater";
+            this.Text = "x(z) GoDaddyUpdater";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.this_FormClosing);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

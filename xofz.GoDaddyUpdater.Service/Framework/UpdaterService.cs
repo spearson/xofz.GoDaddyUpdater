@@ -116,7 +116,7 @@
                         .Append(settings.Domain)
                         .Append(@"/records/")
                         .Append(aaaa ? "AAAA" : "A")
-                        .Append(@"/")
+                        .Append('/')
                         .Append(settings.Subdomain)
                         .ToString();
 

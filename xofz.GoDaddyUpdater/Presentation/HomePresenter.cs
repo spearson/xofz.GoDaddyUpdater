@@ -147,6 +147,7 @@
             w.Run<xofz.Framework.Timer>(t =>
                 {
                     t.Stop();
+                    this.timerHandlerFinished.WaitOne();
                 },
                 "HomeTimer");
         }
@@ -259,7 +260,7 @@
                             Verb = "runas",
                             WorkingDirectory = Environment.CurrentDirectory,
                             FileName = Path.GetFileName(
-                        Assembly.GetEntryAssembly().Location)
+                                Assembly.GetEntryAssembly().Location)
                         };
 
                         Process.Start(psi);
@@ -508,7 +509,7 @@
                     .Append(settings.Domain)
                     .Append(@"/records/")
                     .Append(aaaa ? "AAAA" : "A")
-                    .Append(@"/")
+                    .Append('/')
                     .Append(settings.Subdomain)
                     .ToString();
 
