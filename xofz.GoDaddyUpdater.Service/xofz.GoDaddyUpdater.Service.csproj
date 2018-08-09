@@ -44,8 +44,9 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml" />
-    <Reference Include="xofz.Core98">
-      <HintPath>C:\Dropbox\Libraries\xofz.Core98\xofz.Core98.dll</HintPath>
+    <Reference Include="xofz.Core98, Version=1.2.21.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Dropbox\Libraries\xofz.Core98\xofz.Core98.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
