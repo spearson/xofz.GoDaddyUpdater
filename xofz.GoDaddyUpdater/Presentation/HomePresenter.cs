@@ -132,6 +132,18 @@
                 {
                     w.Run<EventRaiser>(er =>
                     {
+                        w.Run<Messages>(messages =>
+                        {
+                            var waitingMessage = messages.Waiting;
+                            UiHelpers.Write(
+                                this.ui,
+                                () =>
+                                {
+                                    this.ui.CurrentIP = waitingMessage;
+                                    this.ui.SyncedIP = waitingMessage;
+                                });
+                        });
+
                         er.Raise(
                             t,
                             nameof(t.Elapsed));
@@ -460,15 +472,10 @@
                 Messages>(
                 (factory, settings, messages) =>
             {
-                var waitingMessage = messages.Waiting;
                 var cantReadIpMessage = messages.CantReadIp;
                 using (var hc = factory.Create())
                 {
                     hc.Timeout = TimeSpan.FromMilliseconds(10000);
-
-                    UiHelpers.Write(
-                        this.ui,
-                        () => this.ui.CurrentIP = waitingMessage);
                     Task<string> currentIpTask;
                     try
                     {
@@ -497,11 +504,6 @@
                 Messages>(
                 (factory, settings, messages) =>
             {
-                var waitingMessage = messages.Waiting;
-                UiHelpers.Write(this.ui, () =>
-                {
-                    this.ui.SyncedIP = waitingMessage;
-                });
                 var ipTypeUnknownMessage = messages.IpTypeUnknown;
                 var errorReadingFromDnsMessage = messages.ErrorReadingFromDns;
                 var errorSyncingMessage = messages.ErrorSyncing;
