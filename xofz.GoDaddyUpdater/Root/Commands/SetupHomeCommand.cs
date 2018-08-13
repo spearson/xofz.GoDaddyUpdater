@@ -38,6 +38,9 @@
             w.RegisterDependency(
                 new Messages
                 {
+                    CantReadIp =
+                        "Could not read current IP",
+                    Waiting = "...",
                     IpTypeUnknown =
                         "Could not tell if IP is IPv4 or IPv6 address.",
                     ErrorReadingFromDns =

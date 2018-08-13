@@ -76,6 +76,7 @@
                     + "] ("
                     + value
                     + ")";
+                this.Text = @"x(z) GoDaddyUpdater - " + value;
             }
         }
 

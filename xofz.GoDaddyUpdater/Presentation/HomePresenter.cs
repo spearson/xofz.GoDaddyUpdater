@@ -254,6 +254,8 @@
                             + "Run the app as administrator?"));
                     if (response == Response.Yes)
                     {
+                        // thanks go to the question and accepted answer for this:
+                        // https://stackoverflow.com/questions/16926232/run-process-as-administrator-from-a-non-admin-application
                         var psi = new ProcessStartInfo
                         {
                             UseShellExecute = true,
@@ -452,12 +454,21 @@
 
             var w = this.web;
             string currentIP = null;
-            w.Run<HttpClientFactory, GlobalSettingsHolder>(
-                (factory, settings) =>
+            w.Run<
+                HttpClientFactory, 
+                GlobalSettingsHolder, 
+                Messages>(
+                (factory, settings, messages) =>
             {
+                var waitingMessage = messages.Waiting;
+                var cantReadIpMessage = messages.CantReadIp;
                 using (var hc = factory.Create())
                 {
-                    hc.Timeout = TimeSpan.FromMilliseconds(3000);
+                    hc.Timeout = TimeSpan.FromMilliseconds(10000);
+
+                    UiHelpers.Write(
+                        this.ui,
+                        () => this.ui.CurrentIP = waitingMessage);
                     Task<string> currentIpTask;
                     try
                     {
@@ -481,14 +492,20 @@
             });
 
             w.Run<
-                HttpClientFactory, 
+                HttpClientFactory,
                 GlobalSettingsHolder,
                 Messages>(
                 (factory, settings, messages) =>
             {
+                var waitingMessage = messages.Waiting;
+                UiHelpers.Write(this.ui, () =>
+                {
+                    this.ui.SyncedIP = waitingMessage;
+                });
                 var ipTypeUnknownMessage = messages.IpTypeUnknown;
                 var errorReadingFromDnsMessage = messages.ErrorReadingFromDns;
                 var errorSyncingMessage = messages.ErrorSyncing;
+                var cantReadIpMessage = messages.CantReadIp;
                 string syncedIP;
                 IPAddress currentAddress;
                 bool aaaa;
@@ -515,7 +532,7 @@
 
                 using (var hc = factory.CreateGoDaddy())
                 {
-                    hc.Timeout = TimeSpan.FromMilliseconds(5000);
+                    hc.Timeout = TimeSpan.FromSeconds(12);
                     Record record;
                     var task = hc.GetAsync(uri);
                     bool syncedByService = false;
@@ -613,7 +630,7 @@
                             + ex.InnerException?.Message;
                         goto setSyncedIP;
                     }
-                    
+
                     response = syncTask.Result;
 
                     afterSync:
@@ -641,28 +658,7 @@
                             nameof(this.ui.StopSyncingKeyTapped));
                     });
 
-                    w.Run<xofz.Framework.Timer, Messenger>((t, m) =>
-                    {
-                        t.Stop();
-
-                        var message = "There was an error reading or updating DNS records for "
-                            + settings.Subdomain
-                            + @"."
-                            + settings.Domain
-                            + @"."
-                            + Environment.NewLine
-                            + (int)response.StatusCode
-                            + Environment.NewLine
-                            + response.ToString();
-                        UiHelpers.Write(
-                            m.Subscriber,
-                            () => m.GiveError(message));
-                        m.Subscriber.WriteFinished.WaitOne();
-
-                        t.Start(TimeSpan.FromMinutes(5));
-                    },
-                    "HomeTimer");
-                    return;
+                    syncedIP = errorReadingFromDnsMessage;
                 }
 
                 setSyncedIP:
@@ -717,6 +713,5 @@
         private readonly HomeUi ui;
         private readonly MethodWeb web;
         private readonly ManualResetEvent timerHandlerFinished;
-        private const string cantReadIpMessage = @"Could not read current IP";
     }
 }
