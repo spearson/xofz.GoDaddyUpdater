@@ -87,14 +87,13 @@
             w.Run<GlobalSettingsHolder>(settings =>
             {
                 var startKeyEnabled = !settings.AutoStart;
-                UiHelpers.Write(
+                UiHelpers.WriteSync(
                 this.ui,
                 () =>
                 {
                     this.ui.StartSyncingKeyEnabled = startKeyEnabled;
                     this.ui.StopSyncingKeyEnabled = !startKeyEnabled;
                 });
-                this.ui.WriteFinished.WaitOne();
             });
 
             w.Run<GlobalSettingsHolder>(s =>
@@ -150,7 +149,7 @@
                     });
                     t.Start(TimeSpan.FromMinutes(5));
                 },
-                "HomeTimer");
+                @"HomeTimer");
         }
 
         public override void Stop()
@@ -215,14 +214,13 @@
                     this.timerHandlerFinished.WaitOne();
                 },
                 "HomeTimer");
-            UiHelpers.Write(
+            UiHelpers.WriteSync(
                 this.ui,
                 () =>
                 {
                     this.ui.StartSyncingKeyEnabled = false;
                     this.ui.StopSyncingKeyEnabled = true;
                 });
-            this.ui.WriteFinished.WaitOne();
             w.Run<xofz.Framework.Timer, EventRaiser>((t, er) =>
                 {
                     er.Raise(t, nameof(t.Elapsed));
@@ -278,10 +276,9 @@
                         };
 
                         Process.Start(psi);
-                        UiHelpers.Write(
+                        UiHelpers.WriteSync(
                             this.ui,
                             () => this.ui.HideNotifyIcon());
-                        this.ui.WriteFinished.WaitOne();
                         w.Run<Navigator>(n => n.Present<ShutdownPresenter>());
                     }
                 });
@@ -381,10 +378,9 @@
                         };
 
                         Process.Start(psi);
-                        UiHelpers.Write(
+                        UiHelpers.WriteSync(
                             this.ui,
                             () => this.ui.HideNotifyIcon());
-                        this.ui.WriteFinished.WaitOne();
                         w.Run<Navigator>(n => n.Present<ShutdownPresenter>());
                     }
                 });
