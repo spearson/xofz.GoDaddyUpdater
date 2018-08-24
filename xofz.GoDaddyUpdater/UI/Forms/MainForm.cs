@@ -100,15 +100,9 @@
 
         string HomeUi.LastChecked
         {
-            get
-            {
-                return this.lastCheckedLabel.Text;
-            }
+            get => this.lastCheckedLabel.Text;
 
-            set
-            {
-                this.lastCheckedLabel.Text = value;
-            }
+            set => this.lastCheckedLabel.Text = value;
         }
 
         string HomeUi.LastSynced
@@ -306,11 +300,13 @@
         }
 
         private volatile Stopwatch deactivatedTimer;
+        private volatile bool stayVisible;
 
         protected override void OnDeactivate(EventArgs e)
         {
             base.OnDeactivate(e);
 
+            this.stayVisible = true;
             this.deactivatedTimer = Stopwatch.StartNew();
         }
 
@@ -324,11 +320,18 @@
             this.deactivatedTimer?.Stop();
             if (this.Visible)
             {
-                if (!this.Focused && this.deactivatedTimer?.ElapsedMilliseconds 
+                var focused = this.Focused;
+                if (!focused && this.deactivatedTimer?.ElapsedMilliseconds 
                     > SystemInformation.DoubleClickTime)
                 {
+                    this.stayVisible = false;
                     this.WindowState = FormWindowState.Normal;
                     this.Activate();
+                    return;
+                }
+
+                if (focused && this.stayVisible)
+                {
                     return;
                 }
 
