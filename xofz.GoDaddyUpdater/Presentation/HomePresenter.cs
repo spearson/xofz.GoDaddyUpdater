@@ -99,7 +99,7 @@
 
             w.Run<GlobalSettingsHolder>(s =>
             {
-                var hostname = s.Subdomain + "." + s.Domain;
+                var hostname = s.Subdomain + '.' + s.Domain;
                 UiHelpers.Write(
                     this.ui,
                     () => this.ui.Hostname = hostname);

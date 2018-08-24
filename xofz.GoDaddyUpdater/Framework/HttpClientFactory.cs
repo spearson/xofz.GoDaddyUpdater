@@ -13,20 +13,46 @@
 
         public virtual HttpClient Create()
         {
-            return new HttpClient();
+            var w = this.web;
+            var client = default(HttpClient);
+            w.Run<Func<HttpMessageHandler>>(
+                createHandler =>
+                {
+                    var handler = createHandler();
+                    if (handler == default(HttpMessageHandler))
+                    {
+                        client = new HttpClient();
+                        return;
+                    }
+
+                    client = new HttpClient(handler);
+                });
+
+            return client;
         }
 
         public virtual HttpClient CreateGoDaddy()
         {
             var w = this.web;
-            var client = new HttpClient();
-            w.Run<GlobalSettingsHolder>(s =>
+            var client = default(HttpClient);
+            w.Run<Func<HttpMessageHandler>, GlobalSettingsHolder>(
+                (createHandler, settings) =>
             {
+                var handler = createHandler();
+                if (handler == default(HttpMessageHandler))
+                {
+                    client = new HttpClient();
+                    goto setHeaderAuth;
+                }
+
+                client = new HttpClient(handler);
+
+                setHeaderAuth:
                 client
                     .DefaultRequestHeaders
                     .Authorization = new AuthenticationHeaderValue(
                         "sso-key",
-                        s.PublicApiKey + ':' + s.PrivateApiKey);
+                        settings.PublicApiKey + ':' + settings.PrivateApiKey);
             });
 
             return client;

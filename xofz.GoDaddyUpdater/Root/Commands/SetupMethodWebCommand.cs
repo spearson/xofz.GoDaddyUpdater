@@ -1,5 +1,6 @@
 ﻿namespace xofz.GoDaddyUpdater.Root.Commands
 {
+    using System.Net.Http;
     using System.Reflection;
     using xofz.Framework;
     using xofz.Framework.Logging.Logs;
@@ -46,6 +47,8 @@
                 this.messenger);
             w.RegisterDependency(
                 this.settingsProvider.Provide());
+            w.RegisterDependency(
+                (Func<HttpMessageHandler>)(() => default(HttpMessageHandler)));
             w.RegisterDependency(
                 new HttpClientFactory(w));
             w.RegisterDependency(

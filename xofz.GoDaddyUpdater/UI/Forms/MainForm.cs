@@ -1,10 +1,7 @@
 ﻿namespace xofz.GoDaddyUpdater.UI.Forms
 {
     using System;
-    using System.Drawing;
     using System.Diagnostics;
-    using System.IO;
-    using System.Reflection;
     using System.Threading;
     using System.Windows.Forms;
     using xofz.UI.Forms;
@@ -253,31 +250,6 @@
             ThreadPool.QueueUserWorkItem(o => csikt.Invoke());
         }
 
-        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Left)
-            {
-                return;
-            }
-
-            if (this.Visible)
-            {
-                if (this.WindowState == FormWindowState.Minimized)
-                {
-                    this.WindowState = FormWindowState.Normal;
-                    this.Activate();
-                    return;
-                }
-
-                this.Visible = false;
-                return;
-            }
-
-            this.Visible = true;
-            this.WindowState = FormWindowState.Normal;
-            this.Activate();
-        }
-
         private void this_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
@@ -331,6 +303,42 @@
 
             ThreadPool.QueueUserWorkItem(
                 o => usr.Invoke());
+        }
+
+        private volatile Stopwatch deactivatedTimer;
+
+        protected override void OnDeactivate(EventArgs e)
+        {
+            base.OnDeactivate(e);
+
+            this.deactivatedTimer = Stopwatch.StartNew();
+        }
+
+        private void notifyIcon_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left)
+            {
+                return;
+            }
+
+            this.deactivatedTimer?.Stop();
+            if (this.Visible)
+            {
+                if (!this.Focused && this.deactivatedTimer?.ElapsedMilliseconds 
+                    > SystemInformation.DoubleClickTime)
+                {
+                    this.WindowState = FormWindowState.Normal;
+                    this.Activate();
+                    return;
+                }
+
+                this.Visible = false;
+                return;
+            }
+
+            this.Visible = true;
+            this.WindowState = FormWindowState.Normal;
+            this.Activate();
         }
     }
 }
