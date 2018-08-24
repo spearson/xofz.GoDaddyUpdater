@@ -304,9 +304,10 @@
 
         protected override void OnDeactivate(EventArgs e)
         {
-            base.OnDeactivate(e);
-
             this.stayVisible = true;
+
+            base.OnDeactivate(e);
+            
             this.deactivatedTimer = Stopwatch.StartNew();
         }
 
@@ -322,7 +323,7 @@
             {
                 var focused = this.Focused;
                 if (!focused && this.deactivatedTimer?.ElapsedMilliseconds 
-                    > SystemInformation.DoubleClickTime)
+                    > Settings.Default.FocusLostMilliseconds)
                 {
                     this.stayVisible = false;
                     this.WindowState = FormWindowState.Normal;

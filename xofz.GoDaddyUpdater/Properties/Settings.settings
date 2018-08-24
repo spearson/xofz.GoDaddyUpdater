@@ -20,5 +20,8 @@
     <Setting Name="AutoStart" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="FocusLostMilliseconds" Type="System.Int16" Scope="Application">
+      <Value Profile="(Default)">200</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
