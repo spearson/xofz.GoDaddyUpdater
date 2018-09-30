@@ -4,21 +4,21 @@
 
     public interface HomeUi : Ui
     {
-        event Action StartSyncingKeyTapped;
+        event Do StartSyncingKeyTapped;
 
-        event Action StopSyncingKeyTapped;
+        event Do StopSyncingKeyTapped;
 
-        event Action CopyHostnameKeyTapped;
+        event Do CopyHostnameKeyTapped;
 
-        event Action CopyCurrentIpKeyTapped;
+        event Do CopyCurrentIpKeyTapped;
 
-        event Action CopySyncedIpKeyTapped;
+        event Do CopySyncedIpKeyTapped;
 
-        event Action ExitRequested;
+        event Do ExitRequested;
 
-        event Action InstallServiceRequested;
+        event Do InstallServiceRequested;
 
-        event Action UninstallServiceRequested;
+        event Do UninstallServiceRequested;
 
         string Hostname { get; set; }
 

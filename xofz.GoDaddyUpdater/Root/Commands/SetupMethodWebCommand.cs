@@ -1,5 +1,6 @@
 ﻿namespace xofz.GoDaddyUpdater.Root.Commands
 {
+    using System;
     using System.Net.Http;
     using System.Reflection;
     using xofz.Framework;

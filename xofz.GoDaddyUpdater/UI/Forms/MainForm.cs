@@ -6,7 +6,6 @@
     using System.Windows.Forms;
     using xofz.UI.Forms;
     using xofz.GoDaddyUpdater.Properties;
-    using Action = xofz.Action;
     
 
     public partial class MainForm 
@@ -33,21 +32,21 @@
             var h = this.Handle;
         }
 
-        public event Action StartSyncingKeyTapped;
+        public event Do StartSyncingKeyTapped;
 
-        public event Action StopSyncingKeyTapped;
+        public event Do StopSyncingKeyTapped;
 
-        public event Action CopyHostnameKeyTapped;
+        public event Do CopyHostnameKeyTapped;
 
-        public event Action CopyCurrentIpKeyTapped;
+        public event Do CopyCurrentIpKeyTapped;
 
-        public event Action CopySyncedIpKeyTapped;
+        public event Do CopySyncedIpKeyTapped;
 
-        public event Action ExitRequested;
+        public event Do ExitRequested;
 
-        public event Action InstallServiceRequested;
+        public event Do InstallServiceRequested;
 
-        public event Action UninstallServiceRequested;
+        public event Do UninstallServiceRequested;
 
         string HomeUi.Hostname
         {
@@ -107,15 +106,9 @@
 
         string HomeUi.LastSynced
         {
-            get
-            {
-                return this.lastSyncedLabel.Text;
-            }
+            get => this.lastSyncedLabel.Text;
 
-            set
-            {
-                this.lastSyncedLabel.Text = value;
-            }
+            set => this.lastSyncedLabel.Text = value;
         }
 
         bool HomeUi.StartSyncingKeyEnabled
@@ -323,8 +316,10 @@
             if (this.Visible)
             {
                 var focused = this.Focused;
-                if (!focused && dt?.ElapsedMilliseconds 
-                    > Settings.Default.FocusLostMilliseconds)
+                const byte minFocusLostMilliseconds = 125;
+                if (!focused
+                    && dt?.ElapsedMilliseconds > minFocusLostMilliseconds
+                    && dt.ElapsedMilliseconds > Settings.Default.FocusLostMilliseconds)
                 {
                     this.stayVisible = false;
                     this.WindowState = FormWindowState.Normal;
