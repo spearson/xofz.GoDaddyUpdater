@@ -165,43 +165,37 @@
 
         private void ui_CopyHostnameKeyTapped()
         {
-            var hostname = UiHelpers.Read(
-                this.ui,
-                () => this.ui.Hostname);
             var w = this.web;
             w.Run<ClipboardCopier>(copier =>
             {
                 UiHelpers.Write(
                     this.ui,
-                    () => copier.Copy(hostname));
+                    () => copier.Copy(
+                        this.ui.Hostname));
             });
         }
 
         private void ui_CopyCurrentIpKeyTapped()
         {
-            var currentIP = UiHelpers.Read(
-                this.ui,
-                () => this.ui.CurrentIP);
             var w = this.web;
             w.Run<ClipboardCopier>(copier =>
             {
                 UiHelpers.Write(
                     this.ui,
-                    () => copier.Copy(currentIP));
+                    () => copier.Copy(
+                        this.ui.CurrentIP));
             });
         }
 
         private void ui_CopySyncedIpKeyTapped()
         {
-            var syncedIP = UiHelpers.Read(
-                this.ui,
-                () => this.ui.SyncedIP);
             var w = this.web;
             w.Run<ClipboardCopier>(copier =>
             {
                 UiHelpers.Write(
                     this.ui,
-                    () => copier.Copy(syncedIP));
+                    () => copier.Copy(
+                        this.ui.SyncedIP));
             });
         }
 
@@ -319,7 +313,7 @@
                         () => m.GiveError(
                             "Error installing service."
                             + Environment.NewLine
-                            + ex.GetType().ToString()
+                            + ex.GetType()
                             + Environment.NewLine
                             + ex.Message));
                 });
