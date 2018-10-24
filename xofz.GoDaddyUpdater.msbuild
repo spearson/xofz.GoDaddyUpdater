@@ -1,7 +1,11 @@
-<Project DefaultTargets="ChangeVersion;Build;Deploy" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project
+  DefaultTargets="ChangeVersion;Build;Zip;Deploy"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 
-  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />
+  <Import 
+    Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"
+  />
 
 
   <PropertyGroup>
@@ -10,11 +14,14 @@
     <ServiceProjectName>$(ProjectName).Service</ServiceProjectName>
     <BuildDir>$(ProjectName)\bin\Release</BuildDir>
     <ServiceBuildDir>$(ServiceProjectName)\bin\Release</ServiceBuildDir>
-    <DeployFolder>H:\Dropbox\xofz.Apps\GoDaddyUpdater\$(ProjectName)-$(Version)</DeployFolder>
+    <WorkingFolder>$(teamcity_build_workingDir)</WorkingFolder>
+    <ZipFolder>$(ProjectName)-v$(Version)</ZipFolder>
+    <DeployFolder>H:\Dropbox\xofz.Apps\GoDaddyUpdater</DeployFolder>
   </PropertyGroup>
 
 
-  <Target Name="ChangeVersion">
+  <Target
+    Name="ChangeVersion">
     <AssemblyInfo
       CodeLanguage="CS" 
       OutputFile="$(ProjectName)\Properties\AssemblyInfo.cs"
@@ -46,20 +53,84 @@
   </Target>
 
 
-  <Target Name="Build" DependsOnTargets="ChangeVersion">
-    <RemoveDir Directories="$(BuildDir)" />
-    <RemoveDir Directories="$(ServiceBuildDir)" />
-    <MSBuild Projects="$(ProjectName).sln" Targets="Build" Properties="Configuration=Release;Platform=Any CPU" />
+  <Target
+    Name="Build"
+    DependsOnTargets="ChangeVersion">
+    <RemoveDir
+      Directories="$(BuildDir)" />
+    <RemoveDir
+      Directories="$(ServiceBuildDir)" />
+    <MSBuild
+      Projects="$(ProjectName).sln"
+      Targets="Build"
+      Properties="Configuration=Release;Platform=Any CPU"
+    />
   </Target>
   
-
-  <Target Name="Deploy" DependsOnTargets="Build">
-    <MakeDir Directories="$(DeployFolder)" Condition="!Exists('$(DeployFolder)')"/>
+    <UsingTask
+    AssemblyFile="H:\Dropbox\Libraries\xUnit\xunit.runner.msbuild.dll"
+    TaskName="Xunit.Runner.MSBuild.xunit"
+  />
+  
+  <Target
+    Name="Test"
+    DependsOnTargets="Build">
+    <xunit
+      Assemblies="$(ProjectName).Tests\bin\Release\$(ProjectName).Tests.dll"
+    />
+  </Target>
+  
+  
+  <Target 
+    Name="Zip" 
+    DependsOnTargets="Build">
+    <MakeDir 
+      Directories="$(ZipFolder)" 
+      Condition="!Exists('$(ZipFolder)')"
+    />
     <ItemGroup>
-      <FilesToMove Include="$(BuildDir)\$(ProjectName).exe" />
-      <FilesToMove Include="$(BuildDir)\$(ProjectName).exe.config" />
-      <FilesToMove Include="$(ServiceBuildDir)\$(ServiceProjectName).exe" />
+      <FilesToMove
+        Include="$(BuildDir)\$(ProjectName).exe"
+      />
+      <FilesToMove
+        Include="$(BuildDir)\$(ProjectName).exe.config"
+      />
+      <FilesToMove
+        Include="$(ServiceBuildDir)\$(ServiceProjectName).exe"
+      />
     </ItemGroup>
-    <MV SourceFiles="@(FilesToMove)" DestinationFolder="$(DeployFolder)" />
+    <MV
+      SourceFiles="@(FilesToMove)"
+      DestinationFolder="$(ZipFolder)"
+    />
+    <ItemGroup>
+      <FilesToZip
+        Include="$(ZipFolder)\*.*"
+      />
+    </ItemGroup>
+    <Zip 
+      ZipFileName="$(ProjectName)-v$(Version).zip" 
+      WorkingDirectory="$(WorkingFolder)"
+      Files="@(FilesToZip)"
+    />
+  </Target>
+  
+  
+  <Target
+    Name="Deploy"
+    DependsOnTargets="Zip">
+    <MakeDir
+      Directories="$(DeployFolder)"
+      Condition="!Exists('$(DeployFolder)')"
+    />
+    <ItemGroup>
+      <FilesToDeploy
+        Include="$(ProjectName)-v$(Version).zip"
+      />
+    </ItemGroup>
+    <MV
+      SourceFiles="@(FilesToDeploy)"
+      DestinationFolder="$(DeployFolder)"
+    />
   </Target>
 </Project>
