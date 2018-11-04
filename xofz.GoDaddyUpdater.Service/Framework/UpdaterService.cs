@@ -86,7 +86,7 @@
                             return;
                         }
 
-                        currentIP = currentIpTask.Result.Trim();
+                        currentIP = currentIpTask.Result?.Trim();
                     }
                 });
             if (currentIP == null)

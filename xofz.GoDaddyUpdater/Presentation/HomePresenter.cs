@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -88,12 +89,12 @@
             {
                 var startKeyEnabled = !settings.AutoStart;
                 UiHelpers.WriteSync(
-                this.ui,
-                () =>
-                {
-                    this.ui.StartSyncingKeyEnabled = startKeyEnabled;
-                    this.ui.StopSyncingKeyEnabled = !startKeyEnabled;
-                });
+                    this.ui,
+                    () =>
+                    {
+                        this.ui.StartSyncingKeyEnabled = startKeyEnabled;
+                        this.ui.StopSyncingKeyEnabled = !startKeyEnabled;
+                    });
             });
 
             w.Run<GlobalSettingsHolder>(s =>
@@ -479,7 +480,7 @@
                         goto setCurrentIP;
                     }
                     
-                    currentIP = currentIpTask.Result.Trim();
+                    currentIP = currentIpTask.Result?.Trim();
                 }
 
                 setCurrentIP:
@@ -506,13 +507,13 @@
                     aaaa = currentAddress
                         .AddressFamily ==
                         AddressFamily.InterNetworkV6;
-                }
-                else
-                {
-                    syncedIP = ipTypeUnknownMessage;
-                    goto setSyncedIP;
+                    goto buildUri;
                 }
 
+                syncedIP = ipTypeUnknownMessage;
+                goto setSyncedIP;
+
+                buildUri:
                 var uri = new StringBuilder()
                     .Append(@"https://api.godaddy.com/v1/domains/")
                     .Append(settings.Domain)
@@ -550,7 +551,9 @@
                         .Result;
                     var records = JsonConvert.DeserializeObject<ICollection<Record>>(
                         json);
-                    var lastChecked = DateTime.Now.ToString();
+                    var lastChecked = DateTime
+                        .Now
+                        .ToString(CultureInfo.CurrentUICulture);
                     UiHelpers.Write(
                         this.ui,
                         () => this.ui.LastChecked = lastChecked);
@@ -628,7 +631,9 @@
                     afterSync:
                     if (syncedByService || response.IsSuccessStatusCode)
                     {
-                        var lastSynced = DateTime.Now.ToString();
+                        var lastSynced = DateTime
+                            .Now
+                            .ToString(CultureInfo.CurrentUICulture);
                         if (syncedByService)
                         {
                             lastSynced += Environment.NewLine;
@@ -668,7 +673,7 @@
                     return;
                 }
 
-                if (syncedIP.Contains(errorSyncingMessage))
+                if (syncedIP?.Contains(errorSyncingMessage) ?? true)
                 {
                     return;
                 }

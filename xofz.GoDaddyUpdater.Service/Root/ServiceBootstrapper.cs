@@ -19,6 +19,7 @@
         {
             this.executor = executor;
         }
+
         public virtual ServiceBase Service => this.service;
 
         public virtual void Bootstrap()
