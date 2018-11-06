@@ -445,9 +445,13 @@
                   m.Subscriber,
                   () => m.Inform("Service uninstalled."));
             });
+
             UiHelpers.Write(
-                    this.ui,
-                    () => this.ui.ServiceInstalled = false);
+                this.ui,
+                () => 
+                {
+                    this.ui.ServiceInstalled = false;
+                });
         }
 
         private void timer_Elapsed()
@@ -502,6 +506,7 @@
                 string syncedIP;
                 IPAddress currentAddress;
                 bool aaaa;
+                DateTime lastChecked;
                 if (IPAddress.TryParse(currentIP, out currentAddress))
                 {
                     aaaa = currentAddress
@@ -511,6 +516,7 @@
                 }
 
                 syncedIP = ipTypeUnknownMessage;
+                lastChecked = DateTime.Now;
                 goto setSyncedIP;
 
                 buildUri:
@@ -536,12 +542,14 @@
                     catch
                     {
                         syncedIP = errorReadingFromDnsMessage;
+                        lastChecked = DateTime.Now;
                         goto setSyncedIP;
                     }
 
                     var response = task.Result;
                     if (!response.IsSuccessStatusCode)
                     {
+                        lastChecked = DateTime.Now;
                         goto error;
                     }
 
@@ -551,15 +559,10 @@
                         .Result;
                     var records = JsonConvert.DeserializeObject<ICollection<Record>>(
                         json);
-                    var lastChecked = DateTime
-                        .Now
-                        .ToString(CultureInfo.CurrentUICulture);
-                    UiHelpers.Write(
-                        this.ui,
-                        () => this.ui.LastChecked = lastChecked);
+                    lastChecked = DateTime.Now;
                     if (records.Count == 0)
                     {
-                        record = new Record()
+                        record = new Record
                         {
                             data = currentIP,
                             name = settings.Subdomain,
@@ -659,9 +662,16 @@
                 }
 
                 setSyncedIP:
+                var lastCheckedString = lastChecked.ToString(
+                    CultureInfo.CurrentUICulture);
                 UiHelpers.Write(
                     this.ui,
-                    () => this.ui.SyncedIP = syncedIP);
+                    () =>
+                    {
+                        this.ui.SyncedIP = syncedIP;
+                        this.ui.LastChecked = lastCheckedString;
+                    });
+
 
                 if (syncedIP == ipTypeUnknownMessage)
                 {
