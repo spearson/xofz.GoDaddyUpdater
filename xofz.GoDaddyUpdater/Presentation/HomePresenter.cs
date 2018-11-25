@@ -85,10 +85,11 @@
                     "HomeTimer");
             });
 
-            w.Run<GlobalSettingsHolder>(settings =>
+            w.Run<GlobalSettingsHolder, UiReaderWriter>(
+                (settings, uiRw) =>
             {
                 var startKeyEnabled = !settings.AutoStart;
-                UiHelpers.WriteSync(
+                uiRw.WriteSync(
                     this.ui,
                     () =>
                     {
@@ -97,23 +98,25 @@
                     });
             });
 
-            w.Run<GlobalSettingsHolder>(s =>
+            w.Run<GlobalSettingsHolder, UiReaderWriter>(
+                (settings, uiRw) =>
             {
-                var hostname = s.Subdomain + '.' + s.Domain;
-                UiHelpers.Write(
+                var hostname = settings.Subdomain + '.' + settings.Domain;
+                uiRw.Write(
                     this.ui,
                     () => this.ui.Hostname = hostname);
-                var ipProviderUri = s.HttpExternalIpProviderUri;
-                UiHelpers.Write(
+                var ipProviderUri = settings.HttpExternalIpProviderUri;
+                uiRw.Write(
                     this.ui,
                     () => this.ui.IpProviderUri = ipProviderUri);
             });
 
-            w.Run<VersionReader>(vr =>
+            w.Run<VersionReader, UiReaderWriter>(
+                (vr, uiRw) =>
             {
                 var version = vr.Read();
                 var coreVersion = vr.ReadCoreVersion();
-                UiHelpers.Write(
+                uiRw.Write(
                     this.ui,
                     () =>
                     {
@@ -132,10 +135,11 @@
                 {
                     w.Run<EventRaiser>(er =>
                     {
-                        w.Run<Messages>(messages =>
+                        w.Run<Messages, UiReaderWriter>(
+                            (messages, uiRw) =>
                         {
                             var waitingMessage = messages.Waiting;
-                            UiHelpers.Write(
+                            uiRw.Write(
                                 this.ui,
                                 () =>
                                 {
@@ -167,9 +171,10 @@
         private void ui_CopyHostnameKeyTapped()
         {
             var w = this.web;
-            w.Run<ClipboardCopier>(copier =>
+            w.Run<UiReaderWriter, ClipboardCopier>(
+                (uiRw, copier) =>
             {
-                UiHelpers.Write(
+                uiRw.Write(
                     this.ui,
                     () => copier.Copy(
                         this.ui.Hostname));
@@ -179,9 +184,10 @@
         private void ui_CopyCurrentIpKeyTapped()
         {
             var w = this.web;
-            w.Run<ClipboardCopier>(copier =>
+            w.Run<UiReaderWriter, ClipboardCopier>(
+                (uiRw, copier) =>
             {
-                UiHelpers.Write(
+                uiRw.Write(
                     this.ui,
                     () => copier.Copy(
                         this.ui.CurrentIP));
@@ -191,9 +197,10 @@
         private void ui_CopySyncedIpKeyTapped()
         {
             var w = this.web;
-            w.Run<ClipboardCopier>(copier =>
+            w.Run<UiReaderWriter, ClipboardCopier>(
+                (uiRw, copier) =>
             {
-                UiHelpers.Write(
+                uiRw.Write(
                     this.ui,
                     () => copier.Copy(
                         this.ui.SyncedIP));
@@ -203,22 +210,30 @@
         private void ui_StartSyncingKeyTapped()
         {
             var w = this.web;
-            w.Run<xofz.Framework.Timer, EventRaiser>((t, er) =>
+            w.Run<xofz.Framework.Timer>(t =>
                 {
                     t.Stop();
                     this.timerHandlerFinished.WaitOne();
                 },
                 "HomeTimer");
-            UiHelpers.WriteSync(
-                this.ui,
-                () =>
+
+            w.Run<UiReaderWriter>(uiRw =>
+            {
+                uiRw.WriteSync(
+                    this.ui,
+                    () =>
+                    {
+                        this.ui.StartSyncingKeyEnabled = false;
+                        this.ui.StopSyncingKeyEnabled = true;
+                    });
+            });
+
+            w.Run<xofz.Framework.Timer>(t =>
                 {
-                    this.ui.StartSyncingKeyEnabled = false;
-                    this.ui.StopSyncingKeyEnabled = true;
-                });
-            w.Run<xofz.Framework.Timer, EventRaiser>((t, er) =>
-                {
-                    er.Raise(t, nameof(t.Elapsed));
+                    w.Run<EventRaiser>(er =>
+                    {
+                        er.Raise(t, nameof(t.Elapsed));
+                    });                    
                     t.Start(TimeSpan.FromMinutes(5));
                 },
                 "HomeTimer");
@@ -227,13 +242,16 @@
         private void ui_StopSyncingKeyTapped()
         {
             var w = this.web;
-            UiHelpers.Write(
-                this.ui,
-                () =>
-                {
-                    this.ui.StartSyncingKeyEnabled = true;
-                    this.ui.StopSyncingKeyEnabled = false;
-                });
+            w.Run<UiReaderWriter>(uiRw =>
+            {
+                uiRw.Write(
+                    this.ui,
+                    () =>
+                    {
+                        this.ui.StartSyncingKeyEnabled = true;
+                        this.ui.StopSyncingKeyEnabled = false;
+                    });
+            });
         }
 
         private void ui_ExitRequested()
@@ -247,9 +265,9 @@
             var w = this.web;
             if (!this.currentUserIsAdmin())
             {
-                w.Run<Messenger>(m =>
+                w.Run<Messenger, UiReaderWriter>((m, uiRw) =>
                 {
-                    var response = UiHelpers.Read(
+                    var response = uiRw.Read(
                         m.Subscriber,
                         () => m.Question(
                             "The app needs to run as administrator first."
@@ -271,7 +289,7 @@
                         };
 
                         Process.Start(psi);
-                        UiHelpers.WriteSync(
+                        uiRw.WriteSync(
                             this.ui,
                             () => this.ui.HideNotifyIcon());
                         w.Run<Navigator>(n => n.Present<ShutdownPresenter>());
@@ -307,9 +325,9 @@
             }
             catch (Exception ex)
             {
-                w.Run<Messenger>(m =>
+                w.Run<Messenger, UiReaderWriter>((m, uiRw) =>
                 {
-                    UiHelpers.Write(
+                    uiRw.Write(
                         m.Subscriber,
                         () => m.GiveError(
                             "Error installing service."
@@ -323,21 +341,26 @@
             var ec = p.ExitCode;
             if (ec == 0)
             {
-                w.Run<Messenger>(m =>
+                w.Run<UiReaderWriter>(uiRw =>
                 {
-                    UiHelpers.Write(
-                        m.Subscriber,
-                        () => m.Inform("Service installed!"));
+                    w.Run<Messenger>(m =>
+                    {
+                        uiRw.Write(
+                            m.Subscriber,
+                            () => m.Inform("Service installed!"));
+                    });
+
+                    uiRw.Write(
+                        this.ui,
+                        () => this.ui.ServiceInstalled = true);
                 });
-                UiHelpers.Write(
-                    this.ui,
-                    () => this.ui.ServiceInstalled = true);
+
                 return;
             }
 
-            w.Run<Messenger>(m =>
+            w.Run<Messenger, UiReaderWriter>((m, uiRw) =>
             {
-                UiHelpers.Write(
+                uiRw.Write(
                     m.Subscriber,
                     () => m.GiveError(
                         "Error installing service."
@@ -351,9 +374,9 @@
             var w = this.web;
             if (!this.currentUserIsAdmin())
             {
-                w.Run<Messenger>(m =>
+                w.Run<Messenger, UiReaderWriter>((m, uiRw) =>
                 {
-                    var response = UiHelpers.Read(
+                    var response = uiRw.Read(
                         m.Subscriber,
                         () => m.Question(
                             "The app needs to run as administrator first."
@@ -373,7 +396,7 @@
                         };
 
                         Process.Start(psi);
-                        UiHelpers.WriteSync(
+                        uiRw.WriteSync(
                             this.ui,
                             () => this.ui.HideNotifyIcon());
                         w.Run<Navigator>(n => n.Present<ShutdownPresenter>());
@@ -410,9 +433,9 @@
             }
             catch (Exception ex)
             {
-                w.Run<Messenger>(m =>
+                w.Run<Messenger, UiReaderWriter>((m, uiRw) =>
                 {
-                    UiHelpers.Write(
+                    uiRw.Write(
                         m.Subscriber,
                         () => m.GiveError(
                             "Error uninstalling service."
@@ -427,9 +450,9 @@
             var ec = p.ExitCode;
             if (ec != 0)
             {
-                w.Run<Messenger>(m =>
+                w.Run<Messenger, UiReaderWriter>((m, uiRw) =>
                 {
-                    UiHelpers.Write(
+                    uiRw.Write(
                         m.Subscriber,
                         () => m.GiveError(
                             "Error uninstalling service."
@@ -439,19 +462,22 @@
                 return;
             }
 
-            w.Run<Messenger>(m =>
+            w.Run<UiReaderWriter>(uiRw =>
             {
-                UiHelpers.Write(
-                  m.Subscriber,
-                  () => m.Inform("Service uninstalled."));
-            });
-
-            UiHelpers.Write(
-                this.ui,
-                () => 
+                w.Run<Messenger>(m =>
                 {
-                    this.ui.ServiceInstalled = false;
+                    uiRw.Write(
+                        m.Subscriber,
+                        () => m.Inform("Service uninstalled."));
                 });
+
+                uiRw.Write(
+                    this.ui,
+                    () =>
+                    {
+                        this.ui.ServiceInstalled = false;
+                    });
+            });       
         }
 
         private void timer_Elapsed()
@@ -488,9 +514,12 @@
                 }
 
                 setCurrentIP:
-                UiHelpers.Write(
-                    this.ui,
-                    () => this.ui.CurrentIP = currentIP);
+                w.Run<UiReaderWriter>(uiRw =>
+                {
+                    uiRw.Write(
+                        this.ui,
+                        () => this.ui.CurrentIP = currentIP);
+                });                
             });
 
             w.Run<
@@ -598,9 +627,14 @@
                     }
 
                     checkSync:
-                    var shouldSync = UiHelpers.Read(
-                        this.ui,
-                        () => this.ui.StopSyncingKeyEnabled);
+                    var shouldSync = false;
+                    w.Run<UiReaderWriter>(uiRw =>
+                    {
+                        shouldSync = uiRw.Read(
+                            this.ui,
+                            () => this.ui.StopSyncingKeyEnabled);
+                    });
+
                     if (!shouldSync)
                     {
                         goto setSyncedIP;
@@ -643,9 +677,12 @@
                             lastSynced += settings.ServiceAttribution;
                         }
 
-                        UiHelpers.Write(
-                            this.ui,
-                            () => this.ui.LastSynced = lastSynced);
+                        w.Run<UiReaderWriter>(uiRw =>
+                        {
+                            uiRw.Write(
+                                this.ui,
+                                () => this.ui.LastSynced = lastSynced);
+                        });                        
                         syncedIP = currentIP;
                         goto setSyncedIP;
                     }
@@ -664,14 +701,16 @@
                 setSyncedIP:
                 var lastCheckedString = lastChecked.ToString(
                     CultureInfo.CurrentUICulture);
-                UiHelpers.Write(
-                    this.ui,
-                    () =>
-                    {
-                        this.ui.SyncedIP = syncedIP;
-                        this.ui.LastChecked = lastCheckedString;
-                    });
-
+                w.Run<UiReaderWriter>(uiRw =>
+                {
+                    uiRw.Write(
+                        this.ui,
+                        () =>
+                        {
+                            this.ui.SyncedIP = syncedIP;
+                            this.ui.LastChecked = lastCheckedString;
+                        });
+                });
 
                 if (syncedIP == ipTypeUnknownMessage)
                 {
@@ -691,10 +730,10 @@
                 this.setLastSyncedIP(syncedIP);
             });
 
-            w.Run<ServiceChecker>(checker =>
+            w.Run<ServiceChecker, UiReaderWriter>((checker, uiRw) =>
             {
                 var exists = checker.ServiceExists();
-                UiHelpers.Write(
+                uiRw.Write(
                     this.ui,
                     () => this.ui.ServiceInstalled = exists);
             });

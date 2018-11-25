@@ -1,6 +1,5 @@
 ﻿namespace xofz.GoDaddyUpdater.Framework
 {
-    using System;
     using System.Net.Http;
     using System.Net.Http.Headers;
     using xofz.Framework;
@@ -16,7 +15,7 @@
         {
             var w = this.web;
             var client = default(HttpClient);
-            w.Run<Func<HttpMessageHandler>>(
+            w.Run<Gen<HttpMessageHandler>>(
                 createHandler =>
                 {
                     var handler = createHandler();
@@ -36,7 +35,7 @@
         {
             var w = this.web;
             var client = default(HttpClient);
-            w.Run<Func<HttpMessageHandler>, GlobalSettingsHolder>(
+            w.Run<Gen<HttpMessageHandler>, GlobalSettingsHolder>(
                 (createHandler, settings) =>
             {
                 var handler = createHandler();

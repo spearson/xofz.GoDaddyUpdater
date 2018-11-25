@@ -28,13 +28,13 @@
             catch
             {
                 exePath = new StringBuilder()
-                .Append(Environment.CurrentDirectory)
-                .Append("\\")
-                .Append(nameof(xofz))
-                .Append('.')
-                .Append(nameof(GoDaddyUpdater))
-                .Append(".exe")
-                .ToString();
+                    .Append(Environment.CurrentDirectory)
+                    .Append("\\")
+                    .Append(nameof(xofz))
+                    .Append('.')
+                    .Append(nameof(GoDaddyUpdater))
+                    .Append(".exe")
+                    .ToString();
                 config = ConfigurationManager.OpenExeConfiguration(exePath);
             }
 

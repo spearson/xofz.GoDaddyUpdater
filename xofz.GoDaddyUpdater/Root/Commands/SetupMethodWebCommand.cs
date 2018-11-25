@@ -1,6 +1,5 @@
 ﻿namespace xofz.GoDaddyUpdater.Root.Commands
 {
-    using System;
     using System.Net.Http;
     using System.Reflection;
     using xofz.Framework;
@@ -15,7 +14,7 @@
         public SetupMethodWebCommand(
             SettingsProvider settingsProvider,
             Messenger messenger,
-            Func<MethodWeb> createWeb)
+            Gen<MethodWeb> createWeb)
         {
             this.settingsProvider = settingsProvider;
             this.messenger = messenger;
@@ -39,6 +38,8 @@
         {
             var w = this.web;
             w.RegisterDependency(
+                new UiReaderWriter());
+            w.RegisterDependency(
                 new EventRaiser());
             w.RegisterDependency(
                 new EventSubscriber());
@@ -49,7 +50,7 @@
             w.RegisterDependency(
                 this.settingsProvider.Provide());
             w.RegisterDependency(
-                (Func<HttpMessageHandler>)(() => default(HttpMessageHandler)));
+                (Gen<HttpMessageHandler>)(() => default(HttpMessageHandler)));
             w.RegisterDependency(
                 new HttpClientFactory(w));
             w.RegisterDependency(
@@ -65,6 +66,6 @@
         private MethodWeb web;
         private readonly SettingsProvider settingsProvider;
         private readonly Messenger messenger;
-        private readonly Func<MethodWeb> createWeb;
+        private readonly Gen<MethodWeb> createWeb;
     }
 }

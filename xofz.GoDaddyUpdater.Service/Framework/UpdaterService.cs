@@ -8,6 +8,7 @@
     using System.Net.Sockets;
     using System.ServiceProcess;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using xofz.Framework;
@@ -24,15 +25,26 @@
         {
             this.web = web;
 
-            web.Run<xofz.Framework.Timer, EventSubscriber>(
-                (t, subscriber) =>
+            this.InitializeComponent();
+        }
+
+        public virtual void Setup()
+        {
+            if (Interlocked.CompareExchange(ref this.setupIf1, 1, 0) == 1)
             {
-                subscriber.Subscribe(
-                    t,
-                    nameof(t.Elapsed),
-                    this.timer_Elapsed);
-            });
-            web.Run<GlobalSettingsHolder>(settings =>
+                return;
+            }
+
+            var w = this.web;
+            w.Run<xofz.Framework.Timer, EventSubscriber>(
+                (t, subscriber) =>
+                {
+                    subscriber.Subscribe(
+                        t,
+                        nameof(t.Elapsed),
+                        this.timer_Elapsed);
+                });
+            w.Run<GlobalSettingsHolder>(settings =>
             {
                 // must match value in ProjectInstaller ctor
                 this.ServiceName = "gdu."
@@ -49,13 +61,15 @@
         protected override void OnStart(string[] args)
         {
             var w = this.web;
-            w.Run<xofz.Framework.Timer, EventRaiser>((t, er) =>
+            w.Run<xofz.Framework.Timer>(t =>
             {
-                er.Raise(t, nameof(t.Elapsed));
-            });
+                w.Run<EventRaiser>(er =>
+                {
+                    er.Raise(t, nameof(t.Elapsed));
+                });
 
-            w.Run<xofz.Framework.Timer>(t => t.Start(
-                TimeSpan.FromMinutes(5)));
+                t.Start(TimeSpan.FromMinutes(5));
+            });
         }
 
         protected override void OnStop()
@@ -190,6 +204,7 @@
                 });
         }
 
+        private long setupIf1;
         private readonly MethodWeb web;
     }
 }

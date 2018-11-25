@@ -53,8 +53,9 @@
             this.web = web;
         }
 
-        private void setService(ServiceBase service)
+        private void setService(UpdaterService service)
         {
+            service?.Setup();
             this.service = service;
         }
 
