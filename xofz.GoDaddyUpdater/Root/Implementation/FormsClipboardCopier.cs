@@ -7,7 +7,14 @@
     {
         void ClipboardCopier.Copy(string text)
         {
-            Clipboard.SetText(text);
+            try
+            {
+                Clipboard.SetText(text);
+            }
+            catch
+            {
+                // swallow
+            }            
         }
     }
 }
