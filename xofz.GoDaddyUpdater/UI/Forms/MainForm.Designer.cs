@@ -297,7 +297,7 @@
             // 
             this.notifyIcon.Text = "GoDaddyUpdater";
             this.notifyIcon.Visible = true;
-            this.notifyIcon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDown);
+            this.notifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseClick);
             // 
             // menuStrip1
             // 

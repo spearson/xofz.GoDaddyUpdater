@@ -1,14 +1,13 @@
 ﻿namespace xofz.GoDaddyUpdater.UI.Forms
 {
     using System;
-    using System.Diagnostics;
     using System.Threading;
     using System.Windows.Forms;
     using xofz.UI.Forms;
     using xofz.GoDaddyUpdater.Properties;
-    
 
-    public partial class MainForm 
+
+    public partial class MainForm
         : FormUi, HomeUi
     {
         public MainForm()
@@ -66,8 +65,8 @@
             set
             {
                 this.setIpProviderUri(value);
-                this.notifyIcon.Text = 
-                    @"GoDaddyUpdater [" 
+                this.notifyIcon.Text =
+                    @"GoDaddyUpdater ["
                     + this.hostnameLabel.Text
                     + "] ("
                     + value
@@ -99,16 +98,28 @@
 
         string HomeUi.LastChecked
         {
-            get => this.lastCheckedLabel.Text;
+            get
+            {
+                return this.lastCheckedLabel.Text;
+            }
 
-            set => this.lastCheckedLabel.Text = value;
+            set
+            {
+                this.lastCheckedLabel.Text = value;
+            }
         }
 
         string HomeUi.LastSynced
         {
-            get => this.lastSyncedLabel.Text;
+            get
+            {
+                return this.lastSyncedLabel.Text;
+            }
 
-            set => this.lastSyncedLabel.Text = value;
+            set
+            {
+                this.lastSyncedLabel.Text = value;
+            }
         }
 
         bool HomeUi.StartSyncingKeyEnabled
@@ -185,7 +196,7 @@
         private void startSyncingKey_Click(object sender, System.EventArgs e)
         {
             var sskt = this.StartSyncingKeyTapped;
-            if(sskt == null)
+            if (sskt == null)
             {
                 return;
             }
@@ -237,6 +248,31 @@
             ThreadPool.QueueUserWorkItem(o => csikt.Invoke());
         }
 
+        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left)
+            {
+                return;
+            }
+
+            if (this.Visible)
+            {
+                if (this.WindowState == FormWindowState.Minimized)
+                {
+                    this.WindowState = FormWindowState.Normal;
+                    this.Activate();
+                    return;
+                }
+
+                this.Visible = false;
+                return;
+            }
+
+            this.Visible = true;
+            this.WindowState = FormWindowState.Normal;
+            this.Activate();
+        }
+
         private void this_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
@@ -244,7 +280,7 @@
         }
 
         private void exitMenuItem_Click(
-            object sender, 
+            object sender,
             System.EventArgs e)
         {
             this.exit();
@@ -271,7 +307,7 @@
         private void installServiceToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
             var isr = this.InstallServiceRequested;
-            if(isr == null)
+            if (isr == null)
             {
                 return;
             }
@@ -290,55 +326,6 @@
 
             ThreadPool.QueueUserWorkItem(
                 o => usr.Invoke());
-        }
-
-        private volatile Stopwatch deactivatedTimer;
-        private volatile bool stayVisible;
-
-        protected override void OnDeactivate(EventArgs e)
-        {
-            this.stayVisible = true;
-
-            base.OnDeactivate(e);
-            
-            this.deactivatedTimer = Stopwatch.StartNew();
-        }
-
-        private void notifyIcon_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Left)
-            {
-                return;
-            }
-
-            var dt = this.deactivatedTimer;
-            dt?.Stop();
-            if (this.Visible)
-            {
-                var focused = this.Focused;
-                const byte minFocusLostMilliseconds = 125;
-                if (!focused
-                    && dt?.ElapsedMilliseconds > minFocusLostMilliseconds
-                    && dt.ElapsedMilliseconds > Settings.Default.FocusLostMilliseconds)
-                {
-                    this.stayVisible = false;
-                    this.WindowState = FormWindowState.Normal;
-                    this.Activate();
-                    return;
-                }
-
-                if (focused && this.stayVisible)
-                {
-                    return;
-                }
-
-                this.Visible = false;
-                return;
-            }
-
-            this.Visible = true;
-            this.WindowState = FormWindowState.Normal;
-            this.Activate();
         }
     }
 }
