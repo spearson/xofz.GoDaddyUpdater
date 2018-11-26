@@ -248,31 +248,6 @@
             ThreadPool.QueueUserWorkItem(o => csikt.Invoke());
         }
 
-        private void notifyIcon_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Left)
-            {
-                return;
-            }
-
-            if (this.Visible)
-            {
-                if (this.WindowState == FormWindowState.Minimized)
-                {
-                    this.WindowState = FormWindowState.Normal;
-                    this.Activate();
-                    return;
-                }
-
-                this.Visible = false;
-                return;
-            }
-
-            this.Visible = true;
-            this.WindowState = FormWindowState.Normal;
-            this.Activate();
-        }
-
         private void this_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
@@ -326,6 +301,31 @@
 
             ThreadPool.QueueUserWorkItem(
                 o => usr.Invoke());
+        }
+
+        private void notifyIcon_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left)
+            {
+                return;
+            }
+
+            if (this.Visible)
+            {
+                if (this.WindowState == FormWindowState.Minimized)
+                {
+                    this.WindowState = FormWindowState.Normal;
+                    this.Activate();
+                    return;
+                }
+
+                this.Visible = false;
+                return;
+            }
+
+            this.Visible = true;
+            this.WindowState = FormWindowState.Normal;
+            this.Activate();
         }
     }
 }
