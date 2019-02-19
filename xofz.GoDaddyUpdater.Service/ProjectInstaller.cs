@@ -5,7 +5,7 @@
     using System.ComponentModel;
     using System.ServiceProcess;
     using xofz.GoDaddyUpdater.Service.Framework;
-    using xofz.GoDaddyUpdater.Service.Framework.GlobalSettingsProviders;
+    using xofz.GoDaddyUpdater.Service.Framework.SettingsProviders;
 
     [RunInstaller(true)]
     public partial class ProjectInstaller 
@@ -14,7 +14,7 @@
         public ProjectInstaller()
         {
             InitializeComponent();
-            GlobalSettingsProvider sp = new ExeConfigSettingsProvider();
+            SettingsProvider sp = new ExeConfigSettingsProvider();
             var settings = sp.Provide();
             foreach (var anyInstaller in this.Installers)
             {

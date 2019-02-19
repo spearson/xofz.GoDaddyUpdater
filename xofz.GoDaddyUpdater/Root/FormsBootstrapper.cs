@@ -29,26 +29,45 @@
             this.executor = executor;
         }
 
-        public virtual Form MainForm => this.mainForm;
+        public virtual Form Shell => this.mainForm;
 
         public virtual void Bootstrap()
         {
-            if (Interlocked.CompareExchange(ref this.bootstrappedIf1, 1, 0) == 1)
+            if (Interlocked.CompareExchange(
+                    ref this.bootstrappedIf1, 
+                    1, 
+                    0) == 1)
             {
                 return;
             }
 
             this.setMainForm(new MainForm());
+            var finished = new ManualResetEvent(false);
+            ThreadPool.QueueUserWorkItem(o =>
+            {
+                this.onBootstrap();
+                finished.Set();
+            });
+
+            UiMessagePumper pumper = new FormsUiMessagePumper();
+            while (!finished.WaitOne(0, false))
+            {
+                pumper.Pump();
+            }
+        }
+
+        protected virtual void onBootstrap()
+        {
             var s = this.mainForm;
             var e = this.executor;
+            var w = new MethodWebV2();
             Messenger fm = new FormsMessenger();
             fm.Subscriber = s;
             e.Execute(new SetupMethodWebCommand(
                 new AppConfigSettingsProvider(),
-                    fm,
-                    () => new MethodWeb()));
-            var w = e.Get<SetupMethodWebCommand>().Web;
-            UnhandledExceptionEventHandler handler = this.unhandledException;
+                fm,
+                w));
+            UnhandledExceptionEventHandler handler = this.onUnhandledException;
             w.Run<EventSubscriber>(subscriber =>
             {
                 var cd = AppDomain.CurrentDomain;
@@ -57,27 +76,30 @@
                     nameof(cd.UnhandledException),
                     handler);
             });
-            
-            e
-                .Execute(new SetupHomeCommand(
+
+            e.Execute(new SetupHomeCommand(
                     s,
                     new FormsClipboardCopier(),
-                    w))
-                .Execute(new SetupShutdownCommand(
                     w));
+            ThreadPool.QueueUserWorkItem(o =>
+            {
+                e.Execute(new SetupShutdownCommand(
+                    w));
+            });
+                
             w.Run<Navigator>(n => n.Present<HomePresenter>());
         }
 
-        private void setMainForm(MainForm mainForm)
+        protected virtual void setMainForm(MainForm mainForm)
         {
             this.mainForm = mainForm;
         }
 
-        private void unhandledException(
+        protected virtual void onUnhandledException(
             object sender, 
             UnhandledExceptionEventArgs e)
         {
-            var w = this.executor.Get<SetupMethodWebCommand>().Web;
+            var w = this.executor.Get<SetupMethodWebCommand>().W;
             w.Run<LogEditor>(le =>
                 {
                     LogHelpers.AddEntry(le, e);
@@ -85,8 +107,8 @@
                 "Exceptions");
         }
 
-        private MainForm mainForm;
-        private long bootstrappedIf1;
-        private readonly CommandExecutor executor;
+        protected MainForm mainForm;
+        protected long bootstrappedIf1;
+        protected readonly CommandExecutor executor;
     }
 }

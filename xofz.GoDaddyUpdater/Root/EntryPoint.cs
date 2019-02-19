@@ -10,36 +10,41 @@
         [STAThread]
         private static void Main()
         {
-            AppDomain.CurrentDomain.AssemblyResolve += (sender, e) => loadEmbeddedAssembly(e.Name);
+            AppDomain.CurrentDomain.AssemblyResolve +=
+                currentDomain_AssemblyResolve;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
             var bootstrapper = new FormsBootstrapper();
             bootstrapper.Bootstrap();
 
-            Application.Run(bootstrapper.MainForm);
+            Application.Run(bootstrapper.Shell);
         }
 
-        private static Assembly loadEmbeddedAssembly(string name)
+        private static Assembly currentDomain_AssemblyResolve(
+            object sender,
+            ResolveEventArgs e)
         {
-            var assemblyName = new AssemblyName(name);
-            if (name.EndsWith("Retargetable=Yes"))
+            var resourceName = e.Name;
+            var assemblyName = new AssemblyName(resourceName);
+            if (resourceName.EndsWith(
+                @"Retargetable=Yes"))
             {
                 return Assembly.Load(assemblyName);
             }
 
             var container = Assembly.GetExecutingAssembly();
-            var path = assemblyName.Name + ".dll";
+            var path = assemblyName.Name + @".dll";
 
-            using (var stream = container.GetManifestResourceStream(path))
+            using (var s = container.GetManifestResourceStream(path))
             {
-                if (stream == null)
+                if (s == null)
                 {
                     return null;
                 }
 
-                var bytes = new byte[stream.Length];
-                stream.Read(bytes, 0, bytes.Length);
+                var bytes = new byte[s.Length];
+                s.Read(bytes, 0, bytes.Length);
                 return Assembly.Load(bytes);
             }
         }

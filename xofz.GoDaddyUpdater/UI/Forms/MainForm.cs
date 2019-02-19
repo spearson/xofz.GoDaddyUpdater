@@ -6,7 +6,6 @@
     using xofz.UI.Forms;
     using xofz.GoDaddyUpdater.Properties;
 
-
     public partial class MainForm
         : FormUi, HomeUi
     {

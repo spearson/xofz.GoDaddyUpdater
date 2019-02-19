@@ -1,4 +1,4 @@
-﻿namespace xofz.GoDaddyUpdater.Service.Framework.GlobalSettingsProviders
+﻿namespace xofz.GoDaddyUpdater.Service.Framework.SettingsProviders
 {
     using System;
     using System.Configuration;
@@ -6,10 +6,11 @@
     using System.Reflection;
     using System.Text;
     using xofz.GoDaddyUpdater.Service.Framework;
+    using SettingsProvider = xofz.GoDaddyUpdater.Service.Framework.SettingsProvider;
 
-    public sealed class ExeConfigSettingsProvider : GlobalSettingsProvider
+    public sealed class ExeConfigSettingsProvider : SettingsProvider
     {
-        GlobalSettingsHolder GlobalSettingsProvider.Provide()
+        GlobalSettingsHolder SettingsProvider.Provide()
         {
             var exePath = new StringBuilder()
                 .Append(Path.GetDirectoryName(
@@ -40,17 +41,22 @@
 
             var section = config
                 .SectionGroups["applicationSettings"]
-                .Sections[
+                ?.Sections[
                     nameof(xofz) +
                     "." + 
                     nameof(GoDaddyUpdater) + 
                     ".Properties.Settings"]
                 as ClientSettingsSection;
             var gsh = new GlobalSettingsHolder();
+            if (section == null)
+            {
+                return gsh;
+            }
+
             foreach (SettingElement setting in section.Settings)
             {
                 var value = setting?.Value?.ValueXml?.InnerText;
-                switch (setting.Name)
+                switch (setting?.Name)
                 {
                     case "PublicApiKey":
                         gsh.PublicApiKey = value;

@@ -1,8 +1,10 @@
 ﻿namespace xofz.GoDaddyUpdater.Root.Commands
 {
+    using System.Threading;
     using xofz.Framework;
     using xofz.Root;
     using xofz.GoDaddyUpdater.Framework;
+    using xofz.GoDaddyUpdater.Framework.Home;
     using xofz.GoDaddyUpdater.Presentation;
     using xofz.GoDaddyUpdater.UI;
 
@@ -27,12 +29,12 @@
                 .Setup();
         }
 
-        private void registerDependencies()
+        protected virtual void registerDependencies()
         {
             var w = this.web;
             w.RegisterDependency(
                 new xofz.Framework.Timer(),
-                "HomeTimer");
+                DependencyNames.Timer);
             w.RegisterDependency(
                 this.clipboardCopier);
             w.RegisterDependency(
@@ -42,16 +44,52 @@
                         "Could not read current IP",
                     Waiting = "...",
                     IpTypeUnknown =
-                        "Could not tell if IP is IPv4 or IPv6 address.",
+                        "IP address could not be parsed.",
                     ErrorReadingFromDns =
                         "Error reading synced IP from DNS.",
                     ErrorSyncing =
                         "Error syncing. "
                 });
+
+            w.RegisterDependency(
+                new SetupHandler(w));
+            w.RegisterDependency(
+                new StartHandler(w));
+            w.RegisterDependency(
+                new StopHandler(w));
+            w.RegisterDependency(
+                new CopyHostnameKeyTappedHandler(w));
+            w.RegisterDependency(
+                new CopyCurrentIpKeyTappedHandler(w));
+            w.RegisterDependency(
+                new CopySyncedIpKeyTappedHandler(w));
+
+            w.RegisterDependency(
+                new LatchHolder
+                {
+                    Latch = new ManualResetEvent(true)
+                },
+                DependencyNames.TimerLatch);
+            w.RegisterDependency(
+                new TimerHandler(w));
+            w.RegisterDependency(
+                new StartSyncingKeyTappedHandler(w));
+            w.RegisterDependency(
+                new StopSyncingKeyTappedHandler(w));
+            w.RegisterDependency(
+                new ExitRequestedHandler(w));
+
+            w.RegisterDependency(
+                new AdminChecker());
+            w.RegisterDependency(
+                new InstallServiceRequestedHandler(w));
+            w.RegisterDependency(
+                new UninstallServiceRequestedHandler(w));
+
         }
 
-        private readonly HomeUi ui;
-        private readonly ClipboardCopier clipboardCopier;
-        private readonly MethodWeb web;
+        protected readonly HomeUi ui;
+        protected readonly ClipboardCopier clipboardCopier;
+        protected readonly MethodWeb web;
     }
 }

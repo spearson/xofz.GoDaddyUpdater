@@ -39,6 +39,7 @@
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>H:\Dropbox\Libraries\Newtonsoft.Json\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,13 +47,26 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="xofz.Core98, Version=1.2.21.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="xofz.Core98">
       <HintPath>H:\Dropbox\Libraries\xofz.Core98\xofz.Core98.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Framework\AdminChecker.cs" />
     <Compile Include="Framework\ClipboardCopier.cs" />
+    <Compile Include="Framework\Home\CopyCurrentIpKeyTappedHandler.cs" />
+    <Compile Include="Framework\Home\CopyHostnameKeyTappedHandler.cs" />
+    <Compile Include="Framework\Home\CopySyncedIpKeyTappedHandler.cs" />
+    <Compile Include="Framework\Home\DependencyNames.cs" />
+    <Compile Include="Framework\Home\ExitRequestedHandler.cs" />
+    <Compile Include="Framework\Home\InstallServiceRequestedHandler.cs" />
+    <Compile Include="Framework\Home\SetupHandler.cs" />
+    <Compile Include="Framework\Home\StartHandler.cs" />
+    <Compile Include="Framework\Home\StartSyncingKeyTappedHandler.cs" />
+    <Compile Include="Framework\Home\StopHandler.cs" />
+    <Compile Include="Framework\Home\StopSyncingKeyTappedHandler.cs" />
+    <Compile Include="Framework\Home\TimerHandler.cs" />
+    <Compile Include="Framework\Home\UninstallServiceRequestedHandler.cs" />
     <Compile Include="Framework\Messages.cs" />
     <Compile Include="Framework\Record.cs" />
     <Compile Include="Framework\GlobalSettingsHolder.cs" />

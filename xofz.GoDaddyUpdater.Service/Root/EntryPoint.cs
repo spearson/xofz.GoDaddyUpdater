@@ -9,37 +9,41 @@
         private static void Main()
         {
             AppDomain.CurrentDomain.AssemblyResolve 
-                += (sender, e) => loadEmbeddedAssembly(e.Name);
+                += currentDomain_AssemblyResolve;
 
             var bootstrapper = new ServiceBootstrapper();
             bootstrapper.Bootstrap();
-            var services = new ServiceBase[]
+            var services = new[]
             {
                 bootstrapper.Service
             };
             ServiceBase.Run(services);
         }
 
-        private static Assembly loadEmbeddedAssembly(string name)
+        private static Assembly currentDomain_AssemblyResolve(
+            object sender,
+            ResolveEventArgs e)
         {
-            var assemblyName = new AssemblyName(name);
-            if (name.EndsWith("Retargetable=Yes"))
+            var resourceName = e.Name;
+            var assemblyName = new AssemblyName(resourceName);
+            if (resourceName.EndsWith(
+                @"Retargetable=Yes"))
             {
                 return Assembly.Load(assemblyName);
             }
 
             var container = Assembly.GetExecutingAssembly();
-            var path = assemblyName.Name + ".dll";
+            var path = assemblyName.Name + @".dll";
 
-            using (var stream = container.GetManifestResourceStream(path))
+            using (var s = container.GetManifestResourceStream(path))
             {
-                if (stream == null)
+                if (s == null)
                 {
                     return null;
                 }
 
-                var bytes = new byte[stream.Length];
-                stream.Read(bytes, 0, bytes.Length);
+                var bytes = new byte[s.Length];
+                s.Read(bytes, 0, bytes.Length);
                 return Assembly.Load(bytes);
             }
         }

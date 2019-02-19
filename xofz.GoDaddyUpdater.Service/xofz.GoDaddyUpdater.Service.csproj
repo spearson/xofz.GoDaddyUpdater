@@ -53,14 +53,20 @@
     <Compile Include="Framework\GlobalSettingsHolder.cs" />
     <Compile Include="Framework\HttpClientFactory.cs" />
     <Compile Include="Framework\Record.cs" />
-    <Compile Include="Framework\GlobalSettingsProvider.cs" />
-    <Compile Include="Framework\GlobalSettingsProviders\ExeConfigSettingsProvider.cs" />
+    <Compile Include="Framework\SettingsProvider.cs" />
+    <Compile Include="Framework\SettingsProviders\ExeConfigSettingsProvider.cs" />
+    <Compile Include="Framework\Updater\SetupHandler.cs" />
+    <Compile Include="Framework\Updater\StartHandler.cs" />
+    <Compile Include="Framework\Updater\StopHandler.cs" />
+    <Compile Include="Framework\Updater\TimerHandler.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ProjectInstaller.Designer.cs">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
+    <Compile Include="Root\Commands\SetupMethodWebCommand.cs" />
+    <Compile Include="Root\Commands\SetupUpdaterCommand.cs" />
     <Compile Include="Root\ServiceBootstrapper.cs" />
     <Compile Include="Framework\UpdaterService.cs">
       <SubType>Component</SubType>
@@ -82,6 +88,7 @@
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterResolveReferences">
     <ItemGroup>

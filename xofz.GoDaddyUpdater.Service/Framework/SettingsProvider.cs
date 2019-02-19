@@ -1,6 +1,6 @@
 ﻿namespace xofz.GoDaddyUpdater.Service.Framework
 {
-    public interface GlobalSettingsProvider
+    public interface SettingsProvider
     {
         GlobalSettingsHolder Provide();
     }

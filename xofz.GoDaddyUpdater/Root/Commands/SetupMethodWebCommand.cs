@@ -14,27 +14,21 @@
         public SetupMethodWebCommand(
             SettingsProvider settingsProvider,
             Messenger messenger,
-            Gen<MethodWeb> createWeb)
+            MethodWeb web)
         {
             this.settingsProvider = settingsProvider;
             this.messenger = messenger;
-            this.createWeb = createWeb;
-        }
-
-        public virtual MethodWeb Web => this.web;
-
-        public override void Execute()
-        {
-            this.setWeb(this.createWeb());
-            this.registerDependencies();
-        }
-
-        private void setWeb(MethodWeb web)
-        {
             this.web = web;
         }
 
-        private void registerDependencies()
+        public virtual MethodWeb W => this.web;
+
+        public override void Execute()
+        {
+            this.registerDependencies();
+        }
+
+        protected virtual void registerDependencies()
         {
             var w = this.web;
             w.RegisterDependency(
@@ -44,7 +38,7 @@
             w.RegisterDependency(
                 new EventSubscriber());
             w.RegisterDependency(
-                new Navigator(w));
+                new NavigatorV2(w));
             w.RegisterDependency(
                 this.messenger);
             w.RegisterDependency(
@@ -63,9 +57,8 @@
                 new ServiceChecker(w));
         }
 
-        private MethodWeb web;
-        private readonly SettingsProvider settingsProvider;
-        private readonly Messenger messenger;
-        private readonly Gen<MethodWeb> createWeb;
+        protected readonly SettingsProvider settingsProvider;
+        protected readonly Messenger messenger;
+        protected readonly MethodWeb web;
     }
 }

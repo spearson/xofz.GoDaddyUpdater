@@ -35,7 +35,8 @@
       ComVisible="false"
       Guid="71b868ab-7f48-4a64-b3c4-a2cb9f26bcaa"
       AssemblyVersion="$(Version)"
-      AssemblyFileVersion="$(Version)" />
+      AssemblyFileVersion="$(Version)"
+      CLSCompliant="true" />
    <AssemblyInfo
       CodeLanguage="CS" 
       OutputFile="$(ServiceProjectName)\Properties\AssemblyInfo.cs"
@@ -49,7 +50,8 @@
       ComVisible="false"
       Guid="2dcebd2b-86e0-45c0-9d92-3148c20dabbe"
       AssemblyVersion="$(Version)"
-      AssemblyFileVersion="$(Version)" />
+      AssemblyFileVersion="$(Version)"
+      CLSCompliant="true" />
   </Target>
 
 
