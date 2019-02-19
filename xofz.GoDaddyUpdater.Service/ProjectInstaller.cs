@@ -1,6 +1,5 @@
 ﻿namespace xofz.GoDaddyUpdater.Service
 {
-    using System;
     using System.Collections;
     using System.ComponentModel;
     using System.ServiceProcess;

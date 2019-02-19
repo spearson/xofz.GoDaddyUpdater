@@ -98,6 +98,9 @@
         Include="$(BuildDir)\$(ProjectName).exe.config"
       />
       <FilesToMove
+        Include="$(BuildDir)\xofz.Core98.dll"
+      />
+      <FilesToMove
         Include="$(ServiceBuildDir)\$(ServiceProjectName).exe"
       />
     </ItemGroup>
