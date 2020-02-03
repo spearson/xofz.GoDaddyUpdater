@@ -41,14 +41,14 @@
                 new Messages
                 {
                     CantReadIp =
-                        "Could not read current IP",
+                        @"Could not read current IP",
                     Waiting = "...",
                     IpTypeUnknown =
-                        "IP address could not be parsed.",
+                        @"IP address could not be parsed.",
                     ErrorReadingFromDns =
-                        "Error reading synced IP from DNS.",
+                        @"Error reading synced IP from DNS.",
                     ErrorSyncing =
-                        "Error syncing. "
+                        @"Error syncing. "
                 });
 
             w.RegisterDependency(
@@ -80,7 +80,7 @@
                 new ExitRequestedHandler(w));
 
             w.RegisterDependency(
-                new AdminChecker());
+                new AdminChecker(w));
             w.RegisterDependency(
                 new InstallServiceRequestedHandler(w));
             w.RegisterDependency(

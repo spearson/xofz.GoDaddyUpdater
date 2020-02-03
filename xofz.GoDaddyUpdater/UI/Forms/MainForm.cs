@@ -30,21 +30,21 @@
             var h = this.Handle;
         }
 
-        public event Do StartSyncingKeyTapped;
+        public virtual event Do StartSyncingKeyTapped;
 
-        public event Do StopSyncingKeyTapped;
+        public virtual event Do StopSyncingKeyTapped;
 
-        public event Do CopyHostnameKeyTapped;
+        public virtual event Do CopyHostnameKeyTapped;
 
-        public event Do CopyCurrentIpKeyTapped;
+        public virtual event Do CopyCurrentIpKeyTapped;
 
-        public event Do CopySyncedIpKeyTapped;
+        public virtual event Do CopySyncedIpKeyTapped;
 
-        public event Do ExitRequested;
+        public virtual event Do ExitRequested;
 
-        public event Do InstallServiceRequested;
+        public virtual event Do InstallServiceRequested;
 
-        public event Do UninstallServiceRequested;
+        public virtual event Do UninstallServiceRequested;
 
         string HomeUi.Hostname
         {
@@ -53,7 +53,7 @@
             set
             {
                 this.hostnameLabel.Text = value;
-                this.notifyIcon.Text = @"GoDaddyUpdater [" + value + "]";
+                this.notifyIcon.Text = @"GoDaddyUpdater [" + value + ']';
             }
         }
 
@@ -67,19 +67,20 @@
                 this.notifyIcon.Text =
                     @"GoDaddyUpdater ["
                     + this.hostnameLabel.Text
-                    + "] ("
+                    + @"] ("
                     + value
-                    + ")";
+                    + ')';
                 this.Text = @"x(z) GoDaddyUpdater - " + value;
             }
         }
 
-        private void setIpProviderUri(string ipProviderUri)
+        protected virtual void setIpProviderUri(
+            string ipProviderUri)
         {
             this.ipProviderUri = ipProviderUri;
         }
 
-        private string ipProviderUri;
+        protected string ipProviderUri;
 
         string HomeUi.CurrentIP
         {
@@ -97,28 +98,16 @@
 
         string HomeUi.LastChecked
         {
-            get
-            {
-                return this.lastCheckedLabel.Text;
-            }
+            get => this.lastCheckedLabel.Text;
 
-            set
-            {
-                this.lastCheckedLabel.Text = value;
-            }
+            set => this.lastCheckedLabel.Text = value;
         }
 
         string HomeUi.LastSynced
         {
-            get
-            {
-                return this.lastSyncedLabel.Text;
-            }
+            get => this.lastSyncedLabel.Text;
 
-            set
-            {
-                this.lastSyncedLabel.Text = value;
-            }
+            set => this.lastSyncedLabel.Text = value;
         }
 
         bool HomeUi.StartSyncingKeyEnabled
@@ -185,14 +174,16 @@
             }
         }
 
-        private bool serviceInstalled;
+        protected bool serviceInstalled;
 
         void HomeUi.HideNotifyIcon()
         {
             this.notifyIcon.Visible = false;
         }
 
-        private void startSyncingKey_Click(object sender, System.EventArgs e)
+        protected virtual void startSyncingKey_Click(
+            object sender, 
+            System.EventArgs e)
         {
             var sskt = this.StartSyncingKeyTapped;
             if (sskt == null)
@@ -200,10 +191,13 @@
                 return;
             }
 
-            ThreadPool.QueueUserWorkItem(o => sskt.Invoke());
+            ThreadPool.QueueUserWorkItem(
+                o => sskt.Invoke());
         }
 
-        private void stopSyncingKey_Click(object sender, System.EventArgs e)
+        protected virtual void stopSyncingKey_Click(
+            object sender, 
+            System.EventArgs e)
         {
             var sskt = this.StopSyncingKeyTapped;
             if (sskt == null)
@@ -211,10 +205,13 @@
                 return;
             }
 
-            ThreadPool.QueueUserWorkItem(o => sskt.Invoke());
+            ThreadPool.QueueUserWorkItem(
+                o => sskt.Invoke());
         }
 
-        private void copyHostnameKey_Click(object sender, System.EventArgs e)
+        protected virtual void copyHostnameKey_Click(
+            object sender, 
+            System.EventArgs e)
         {
             var chkt = this.CopyHostnameKeyTapped;
             if (chkt == null)
@@ -222,10 +219,13 @@
                 return;
             }
 
-            ThreadPool.QueueUserWorkItem(o => chkt.Invoke());
+            ThreadPool.QueueUserWorkItem(
+                o => chkt.Invoke());
         }
 
-        private void copyCurrentIpKey_Click(object sender, System.EventArgs e)
+        protected virtual void copyCurrentIpKey_Click(
+            object sender, 
+            System.EventArgs e)
         {
             var ccikt = this.CopyCurrentIpKeyTapped;
             if (ccikt == null)
@@ -233,10 +233,13 @@
                 return;
             }
 
-            ThreadPool.QueueUserWorkItem(o => ccikt.Invoke());
+            ThreadPool.QueueUserWorkItem(
+                o => ccikt.Invoke());
         }
 
-        private void copySyncedIpKey_Click(object sender, System.EventArgs e)
+        protected virtual void copySyncedIpKey_Click(
+            object sender, 
+            System.EventArgs e)
         {
             var csikt = this.CopySyncedIpKeyTapped;
             if (csikt == null)
@@ -244,28 +247,33 @@
                 return;
             }
 
-            ThreadPool.QueueUserWorkItem(o => csikt.Invoke());
+            ThreadPool.QueueUserWorkItem(
+                o => csikt.Invoke());
         }
 
-        private void this_FormClosing(object sender, FormClosingEventArgs e)
+        protected virtual void this_FormClosing(
+            object sender, 
+            FormClosingEventArgs e)
         {
             e.Cancel = true;
             this.Visible = false;
         }
 
-        private void exitMenuItem_Click(
+        protected virtual void exitMenuItem_Click(
             object sender,
             System.EventArgs e)
         {
             this.exit();
         }
 
-        private void exitToolStripMenuItem_Click(object sender, System.EventArgs e)
+        protected virtual void exitToolStripMenuItem_Click(
+            object sender, 
+            System.EventArgs e)
         {
             this.exit();
         }
 
-        private void exit()
+        protected virtual void exit()
         {
             var er = this.ExitRequested;
             if (er == null)
@@ -273,12 +281,13 @@
                 return;
             }
 
-            this.notifyIcon.Visible = false;
             ThreadPool.QueueUserWorkItem(
                 o => er.Invoke());
         }
 
-        private void installServiceToolStripMenuItem_Click(object sender, System.EventArgs e)
+        protected virtual void installServiceToolStripMenuItem_Click(
+            object sender, 
+            System.EventArgs e)
         {
             var isr = this.InstallServiceRequested;
             if (isr == null)
@@ -290,7 +299,9 @@
                 o => isr.Invoke());
         }
 
-        private void uninstallServiceToolStripMenuItem_Click(object sender, EventArgs e)
+        protected virtual void uninstallServiceToolStripMenuItem_Click(
+            object sender, 
+            EventArgs e)
         {
             var usr = this.UninstallServiceRequested;
             if (usr == null)
@@ -302,7 +313,9 @@
                 o => usr.Invoke());
         }
 
-        private void notifyIcon_MouseDown(object sender, MouseEventArgs e)
+        protected virtual void notifyIcon_MouseDown(
+            object sender, 
+            MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left)
             {

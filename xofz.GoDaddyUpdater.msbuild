@@ -17,6 +17,7 @@
     <WorkingFolder>$(teamcity_build_workingDir)</WorkingFolder>
     <ZipFolder>$(ProjectName)-v$(Version)</ZipFolder>
     <DeployFolder>H:\Dropbox\xofz.Apps\GoDaddyUpdater</DeployFolder>
+    <DeployFolder2>H:\OneDrive\xofz.Apps\GoDaddyUpdater</DeployFolder2>
   </PropertyGroup>
 
 
@@ -128,14 +129,22 @@
       Directories="$(DeployFolder)"
       Condition="!Exists('$(DeployFolder)')"
     />
+        <MakeDir
+      Directories="$(DeployFolder2)"
+      Condition="!Exists('$(DeployFolder2)')"
+    />
     <ItemGroup>
       <FilesToDeploy
         Include="$(ProjectName)-v$(Version).zip"
       />
     </ItemGroup>
-    <MV
+    <Copy
       SourceFiles="@(FilesToDeploy)"
       DestinationFolder="$(DeployFolder)"
+    />
+    <Copy
+      SourceFiles="@(FilesToDeploy)"
+      DestinationFolder="$(DeployFolder2)"
     />
   </Target>
 </Project>

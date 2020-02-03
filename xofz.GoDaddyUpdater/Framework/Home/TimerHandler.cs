@@ -17,22 +17,22 @@
     public class TimerHandler
     {
         public TimerHandler(
-            MethodWeb web)
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual void Handle(
             HomeUi ui)
         {
-            var w = this.web;
-            w.Run<LatchHolder>(latch =>
+            var r = this.runner;
+            r.Run<LatchHolder>(latch =>
                 {
                     latch.Latch.Reset();
                 },
                 DependencyNames.TimerLatch);
             string currentIP = null;
-            w.Run<
+            r.Run<
                 HttpClientFactory,
                 GlobalSettingsHolder,
                 Messages>(
@@ -59,7 +59,7 @@
                     }
 
                     setCurrentIP:
-                    w.Run<UiReaderWriter>(uiRw =>
+                    r.Run<UiReaderWriter>(uiRw =>
                     {
                         uiRw.Write(
                             ui,
@@ -67,7 +67,7 @@
                     });
                 });
 
-            w.Run<
+            r.Run<
                 HttpClientFactory,
                 GlobalSettingsHolder,
                 Messages>(
@@ -98,7 +98,7 @@
                         .Append(@"https://api.godaddy.com/v1/domains/")
                         .Append(settings.Domain)
                         .Append(@"/records/")
-                        .Append(aaaa ? "AAAA" : "A")
+                        .Append(aaaa ? @"AAAA" : @"A")
                         .Append('/')
                         .Append(settings.Subdomain)
                         .ToString();
@@ -113,7 +113,7 @@
                         {
                             task.Wait();
                         }
-                        catch
+                        catch (Exception ex)
                         {
                             syncedIP = errorReadingFromDnsMessage;
                             lastChecked = DateTime.Now;
@@ -141,13 +141,13 @@
                                 data = currentIP,
                                 name = settings.Subdomain,
                                 ttl = 3600,
-                                type = aaaa ? "AAAA" : "A"
+                                type = aaaa ? @"AAAA" : @"A"
                             };
                             records.Add(record);
                             syncedIP = new StringBuilder()
-                                .Append("No ")
-                                .Append(aaaa ? "AAAA" : "A")
-                                .Append(" record found for this subdomain.")
+                                .Append(@"No ")
+                                .Append(aaaa ? @"AAAA" : @"A")
+                                .Append(@" record found for this subdomain.")
                                 .ToString();
                             goto checkSync;
                         }
@@ -173,11 +173,14 @@
 
                         checkSync:
                         var shouldSync = false;
-                        w.Run<UiReaderWriter>(uiRw =>
+                        r.Run<UiReaderWriter>(uiRw =>
                         {
                             shouldSync = uiRw.Read(
                                 ui,
-                                () => ui.StopSyncingKeyEnabled);
+                                () =>
+                                {
+                                    return ui.StopSyncingKeyEnabled;
+                                });
                         });
 
                         if (!shouldSync)
@@ -191,7 +194,7 @@
                         var content = new StringContent(
                             json,
                             System.Text.Encoding.UTF8,
-                            "application/json");
+                            @"application/json");
                         var syncTask = hc.PutAsync(
                             uri,
                             content);
@@ -222,7 +225,7 @@
                                 lastSynced += settings.ServiceAttribution;
                             }
 
-                            w.Run<UiReaderWriter>(uiRw =>
+                            r.Run<UiReaderWriter>(uiRw =>
                             {
                                 uiRw.Write(
                                     ui,
@@ -233,7 +236,7 @@
                         }
 
                         error:
-                        w.Run<EventRaiser>(er =>
+                        r.Run<EventRaiser>(er =>
                         {
                             er.Raise(
                                 ui,
@@ -244,10 +247,10 @@
                     }
 
                     setSyncedIP:
-                    var lastCheckedString = lastChecked.ToString(
-                        CultureInfo.CurrentUICulture);
-                    w.Run<UiReaderWriter>(uiRw =>
+                    r.Run<UiReaderWriter>(uiRw =>
                     {
+                        var lastCheckedString = lastChecked.ToString(
+                            CultureInfo.CurrentUICulture);
                         uiRw.Write(
                             ui,
                             () =>
@@ -275,15 +278,19 @@
                     this.setLastSyncedIP(syncedIP);
                 });
 
-            w.Run<ServiceChecker, UiReaderWriter>((checker, uiRw) =>
+            r.Run<ServiceChecker, UiReaderWriter>(
+                (checker, uiRw) =>
             {
                 var exists = checker.ServiceExists();
                 uiRw.Write(
                     ui,
-                    () => ui.ServiceInstalled = exists);
+                    () =>
+                    {
+                        ui.ServiceInstalled = exists;
+                    });
             });
 
-            w.Run<LatchHolder>(latch =>
+            r.Run<LatchHolder>(latch =>
                 {
                     latch.Latch.Set();
                 },
@@ -297,6 +304,6 @@
         }
 
         protected string lastSyncedIP;
-        protected readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

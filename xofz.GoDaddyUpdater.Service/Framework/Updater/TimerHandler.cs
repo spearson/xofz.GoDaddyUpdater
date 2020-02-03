@@ -13,16 +13,17 @@
 
     public class TimerHandler
     {
-        public TimerHandler(MethodWeb web)
+        public TimerHandler(
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual void Handle()
         {
-            var w = this.web;
+            var r = this.runner;
             string currentIP = null;
-            w.Run<HttpClientFactory, GlobalSettingsHolder>(
+            r.Run<HttpClientFactory, GlobalSettingsHolder>(
                 (factory, settings) =>
                 {
                     using (var hc = factory.Create())
@@ -49,13 +50,15 @@
                 return;
             }
 
-            w.Run<HttpClientFactory, GlobalSettingsHolder>(
+            r.Run<HttpClientFactory, GlobalSettingsHolder>(
                 (factory, settings) =>
                 {
                     string syncedIP;
                     IPAddress currentAddress;
                     bool aaaa;
-                    if (IPAddress.TryParse(currentIP, out currentAddress))
+                    if (IPAddress.TryParse(
+                        currentIP, 
+                        out currentAddress))
                     {
                         aaaa = currentAddress.AddressFamily ==
                             AddressFamily.InterNetworkV6;
@@ -69,7 +72,7 @@
                         .Append(@"https://api.godaddy.com/v1/domains/")
                         .Append(settings.Domain)
                         .Append(@"/records/")
-                        .Append(aaaa ? "AAAA" : "A")
+                        .Append(aaaa ? @"AAAA" : @"A")
                         .Append('/')
                         .Append(settings.Subdomain)
                         .ToString();
@@ -101,14 +104,14 @@
                             .Result;
                         var records = JsonConvert.DeserializeObject<ICollection<Record>>(
                             json);
-                        if (records.Count == 0)
+                        if (records.Count < 1)
                         {
                             record = new Record
                             {
                                 data = currentIP,
                                 name = settings.Subdomain,
                                 ttl = 3600,
-                                type = aaaa ? "AAAA" : "A"
+                                type = aaaa ? @"AAAA" : @"A"
                             };
                             records.Add(record);
                             goto sync;
@@ -129,7 +132,7 @@
                         var content = new StringContent(
                             json,
                             System.Text.Encoding.UTF8,
-                            "application/json");
+                            @"application/json");
                         Task<HttpResponseMessage> syncTask;
                         try
                         {
@@ -140,12 +143,12 @@
                         }
                         catch
                         {
-                            return;
+                            // swallow
                         }
                     }
                 });
         }
 
-        protected readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

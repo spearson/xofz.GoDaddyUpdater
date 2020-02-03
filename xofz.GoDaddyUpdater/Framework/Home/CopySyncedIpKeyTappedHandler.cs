@@ -7,25 +7,28 @@
     public class CopySyncedIpKeyTappedHandler
     {
         public CopySyncedIpKeyTappedHandler(
-            MethodWeb web)
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual void Handle(
             HomeUi ui)
         {
-            var w = this.web;
-            w.Run<UiReaderWriter, ClipboardCopier>(
-                (uiRw, copier) =>
+            var r = this.runner;
+            r.Run<UiReaderWriter, ClipboardCopier>(
+                (uiRW, copier) =>
                 {
-                    uiRw.Write(
+                    uiRW.Write(
                         ui,
-                        () => copier.Copy(
-                            ui.SyncedIP));
+                        () =>
+                        {
+                            copier.Copy(
+                                ui.SyncedIP);
+                        });
                 });
         }
 
-        protected readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

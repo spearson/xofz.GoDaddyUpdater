@@ -7,16 +7,16 @@
     public class StopSyncingKeyTappedHandler
     {
         public StopSyncingKeyTappedHandler(
-            MethodWeb web)
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual void Handle(
             HomeUi ui)
         {
-            var w = this.web;
-            w.Run<UiReaderWriter>(uiRw =>
+            var r = this.runner;
+            r.Run<UiReaderWriter>(uiRw =>
             {
                 uiRw.Write(
                     ui,
@@ -28,6 +28,6 @@
             });
         }
 
-        protected readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

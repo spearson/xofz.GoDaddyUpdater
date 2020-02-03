@@ -6,9 +6,10 @@
 
     public class HttpClientFactory
     {
-        public HttpClientFactory(MethodWeb web)
+        public HttpClientFactory(
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual HttpClient Create()
@@ -18,20 +19,22 @@
 
         public virtual HttpClient CreateGoDaddy()
         {
-            var w = this.web;
+            var r = this.runner;
             var client = new HttpClient();
-            w.Run<GlobalSettingsHolder>(s =>
+            r.Run<GlobalSettingsHolder>(settings =>
             {
                 client
                     .DefaultRequestHeaders
                     .Authorization = new AuthenticationHeaderValue(
-                        "sso-key",
-                        s.PublicApiKey + ':' + s.PrivateApiKey);
+                        @"sso-key",
+                        settings.PublicApiKey 
+                        + ':' 
+                        + settings.PrivateApiKey);
             });
 
             return client;
         }
 
-        private readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

@@ -5,18 +5,18 @@
     using xofz.Framework;
     using xofz.GoDaddyUpdater.Service.Framework.Updater;
 
-    public partial class UpdaterService : ServiceBase
+    public partial class UpdaterService 
+        : ServiceBase
     {
-        private UpdaterService()
-        {
-            this.InitializeComponent();
-        }
-
-        public UpdaterService(MethodWeb web)
+        public UpdaterService(
+            MethodRunner runner)
             : this()
         {
-            this.web = web;
+            this.runner = runner;
+        }
 
+        private UpdaterService()
+        {
             this.InitializeComponent();
         }
 
@@ -30,10 +30,10 @@
                 return;
             }
 
-            var w = this.web;
-            w.Run<EventSubscriber>(sub =>
+            var r = this.runner;
+            r.Run<EventSubscriber>(sub =>
             {
-                w.Run<xofz.Framework.Timer>(t =>
+                r.Run<xofz.Framework.Timer>(t =>
                 {
                     sub.Subscribe(
                         t,
@@ -44,7 +44,7 @@
 
             Do<string> applyServiceName =
                 name => this.ServiceName = name;
-            w.Run<SetupHandler>(handler =>
+            r.Run<SetupHandler>(handler =>
             {
                 handler.Handle(applyServiceName);
             });
@@ -53,8 +53,8 @@
 
         protected override void OnStart(string[] args)
         {
-            var w = this.web;
-            w.Run<StartHandler>(handler =>
+            var r = this.runner;
+            r.Run<StartHandler>(handler =>
             {
                 handler.Handle();
             });
@@ -62,23 +62,23 @@
 
         protected override void OnStop()
         {
-            var w = this.web;
-            w.Run<StopHandler>(handler =>
+            var r = this.runner;
+            r.Run<StopHandler>(handler =>
             {
                 handler.Handle();
             });
         }
 
-        private void timer_Elapsed()
+        protected virtual void timer_Elapsed()
         {
-            var w = this.web;
-            w.Run<TimerHandler>(handler =>
+            var r = this.runner;
+            r.Run<TimerHandler>(handler =>
             {
                 handler.Handle();
             });
         }
 
-        private long setupIf1;
-        private readonly MethodWeb web;
+        protected long setupIf1;
+        protected readonly MethodRunner runner;
     }
 }

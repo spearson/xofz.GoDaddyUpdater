@@ -4,20 +4,21 @@
 
     public class StopHandler
     {
-        public StopHandler(MethodWeb web)
+        public StopHandler(
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual void Handle()
         {
-            var w = this.web;
-            w.Run<xofz.Framework.Timer>(t =>
+            var r = this.runner;
+            r.Run<xofz.Framework.Timer>(t =>
             {
                 t.Stop();
             });
         }
 
-        protected readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

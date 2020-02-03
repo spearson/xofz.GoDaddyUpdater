@@ -7,20 +7,21 @@
 
     public class StartHandler
     {
-        public StartHandler(MethodWeb web)
+        public StartHandler(
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual void Handle(
             HomeUi ui)
         {
-            var w = this.web;
-            w.Run<xofz.Framework.Timer>(t =>
+            var r = this.runner;
+            r.Run<xofz.Framework.Timer>(t =>
                 {
-                    w.Run<EventRaiser>(er =>
+                    r.Run<EventRaiser>(er =>
                     {
-                        w.Run<Messages, UiReaderWriter>(
+                        r.Run<Messages, UiReaderWriter>(
                             (messages, uiRw) =>
                             {
                                 var waitingMessage = messages.Waiting;
@@ -37,11 +38,13 @@
                             t,
                             nameof(t.Elapsed));
                     });
-                    t.Start(TimeSpan.FromMinutes(5));
+
+                    t.Start(
+                        TimeSpan.FromMinutes(5));
                 },
                 DependencyNames.Timer);
         }
 
-        protected readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

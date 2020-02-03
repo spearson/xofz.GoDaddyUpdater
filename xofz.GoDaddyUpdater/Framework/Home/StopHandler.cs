@@ -6,19 +6,19 @@
     public class StopHandler
     {
         public StopHandler(
-            MethodWeb web)
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual void Handle(
             HomeUi ui)
         {
-            var w = this.web;
-            w.Run<xofz.Framework.Timer>(t =>
+            var r = this.runner;
+            r.Run<xofz.Framework.Timer>(t =>
                 {
                     t.Stop();
-                    w.Run<LatchHolder>(latch =>
+                    r.Run<LatchHolder>(latch =>
                         {
                             latch.Latch.WaitOne();
                         },
@@ -27,6 +27,6 @@
                 DependencyNames.Timer);
         }
 
-        protected readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

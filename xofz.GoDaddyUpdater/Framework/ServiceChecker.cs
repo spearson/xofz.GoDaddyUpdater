@@ -6,21 +6,22 @@
 
     public class ServiceChecker
     {
-        public ServiceChecker(MethodWeb web)
+        public ServiceChecker(
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual bool ServiceExists()
         {
-            var w = this.web;
+            var r = this.runner;
             var exists = false;
-            w.Run<GlobalSettingsHolder>(settings =>
+            r.Run<GlobalSettingsHolder>(settings =>
             {
                 var sc = ServiceController
                     .GetServices()
                     .FirstOrDefault(service => service.ServiceName ==
-                        "gdu."
+                        @"gdu."
                         + settings.Subdomain
                         + '.'
                         + settings.Domain
@@ -37,6 +38,6 @@
             return exists;
         }
 
-        private readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

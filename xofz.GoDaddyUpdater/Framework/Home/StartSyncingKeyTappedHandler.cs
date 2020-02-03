@@ -8,19 +8,19 @@
     public class StartSyncingKeyTappedHandler
     {
         public StartSyncingKeyTappedHandler(
-            MethodWeb web)
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual void Handle(
             HomeUi ui)
         {
-            var w = this.web;
-            w.Run<xofz.Framework.Timer>(t =>
+            var r = this.runner;
+            r.Run<xofz.Framework.Timer>(t =>
                 {
                     t.Stop();
-                    w.Run<LatchHolder>(latch =>
+                    r.Run<LatchHolder>(latch =>
                         {
                             latch.Latch.WaitOne();
                         },
@@ -28,7 +28,7 @@
                 },
                 DependencyNames.Timer);
 
-            w.Run<UiReaderWriter>(uiRw =>
+            r.Run<UiReaderWriter>(uiRw =>
             {
                 uiRw.WriteSync(
                     ui,
@@ -39,18 +39,19 @@
                     });
             });
 
-            w.Run<TimerHandler>(handler =>
+            r.Run<TimerHandler>(handler =>
             {
                 handler.Handle(ui);
             });
 
-            w.Run<xofz.Framework.Timer>(t =>
+            r.Run<xofz.Framework.Timer>(
+                t =>
                 {
                     t.Start(TimeSpan.FromMinutes(5));
                 },
                 DependencyNames.Timer);
         }
 
-        protected readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

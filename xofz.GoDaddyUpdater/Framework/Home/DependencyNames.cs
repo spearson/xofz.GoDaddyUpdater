@@ -2,8 +2,10 @@
 {
     public class DependencyNames
     {
-        public const string Timer = @"HomeTimer";
+        public const string Timer = baseName + nameof(Timer);
 
-        public const string TimerLatch = @"HomeTimerLatch";
+        public const string TimerLatch = baseName + nameof(TimerLatch);
+
+        protected const string baseName = nameof(Home);
     }
 }

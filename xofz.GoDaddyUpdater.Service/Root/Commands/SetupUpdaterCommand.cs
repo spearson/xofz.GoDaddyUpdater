@@ -8,7 +8,8 @@
 
     public class SetupUpdaterCommand : Command
     {
-        public SetupUpdaterCommand(MethodWeb web)
+        public SetupUpdaterCommand(
+            MethodWeb web)
         {
             this.web = web;
         }

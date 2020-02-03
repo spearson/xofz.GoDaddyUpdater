@@ -8,7 +8,7 @@
     {
         public SetupMethodWebCommand(
             SettingsProvider settingsProvider,
-            MethodWebV2 web)
+            MethodWeb web)
         {
             this.settingsProvider = settingsProvider;
             this.web = web;
@@ -30,6 +30,6 @@
         }
 
         protected readonly SettingsProvider settingsProvider;
-        protected readonly MethodWebV2 web;
+        protected readonly MethodWeb web;
     }
 }

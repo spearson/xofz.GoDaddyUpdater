@@ -5,25 +5,26 @@
 
     public class StartHandler
     {
-        public StartHandler(MethodWeb web)
+        public StartHandler(
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual void Handle()
         {
-            var w = this.web;
-            w.Run<TimerHandler>(handler =>
+            var r = this.runner;
+            r.Run<TimerHandler>(handler =>
             {
                 handler.Handle();
             });
 
-            w.Run<xofz.Framework.Timer>(t =>
+            r.Run<xofz.Framework.Timer>(t =>
             {
                 t.Start(TimeSpan.FromMinutes(5));
             });
         }
 
-        protected readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

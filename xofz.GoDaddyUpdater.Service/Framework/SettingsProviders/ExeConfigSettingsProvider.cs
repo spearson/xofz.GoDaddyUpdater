@@ -8,7 +8,8 @@
     using xofz.GoDaddyUpdater.Service.Framework;
     using SettingsProvider = xofz.GoDaddyUpdater.Service.Framework.SettingsProvider;
 
-    public sealed class ExeConfigSettingsProvider : SettingsProvider
+    public sealed class ExeConfigSettingsProvider 
+        : SettingsProvider
     {
         GlobalSettingsHolder SettingsProvider.Provide()
         {
@@ -19,7 +20,7 @@
                 .Append(nameof(xofz))
                 .Append('.')
                 .Append(nameof(GoDaddyUpdater))
-                .Append(".exe")
+                .Append(@".exe")
                 .ToString();
             Configuration config;
             try
@@ -34,7 +35,7 @@
                     .Append(nameof(xofz))
                     .Append('.')
                     .Append(nameof(GoDaddyUpdater))
-                    .Append(".exe")
+                    .Append(@".exe")
                     .ToString();
                 config = ConfigurationManager.OpenExeConfiguration(exePath);
             }
@@ -43,9 +44,9 @@
                 .SectionGroups["applicationSettings"]
                 ?.Sections[
                     nameof(xofz) +
-                    "." + 
+                    '.' + 
                     nameof(GoDaddyUpdater) + 
-                    ".Properties.Settings"]
+                    @".Properties.Settings"]
                 as ClientSettingsSection;
             var gsh = new GlobalSettingsHolder();
             if (section == null)
@@ -58,19 +59,19 @@
                 var value = setting?.Value?.ValueXml?.InnerText;
                 switch (setting?.Name)
                 {
-                    case "PublicApiKey":
+                    case @"PublicApiKey":
                         gsh.PublicApiKey = value;
                         continue;
-                    case "PrivateApiKey":
+                    case @"PrivateApiKey":
                         gsh.PrivateApiKey = value;
                         continue;
-                    case "Domain":
+                    case @"Domain":
                         gsh.Domain = value;
                         continue;
-                    case "Subdomain":
+                    case @"Subdomain":
                         gsh.Subdomain = value;
                         continue;
-                    case "HttpExternalIpProviderUri":
+                    case @"HttpExternalIpProviderUri":
                         gsh.HttpExternalIpProviderUri = value;
                         continue;
                 }

@@ -1,9 +1,9 @@
-﻿namespace xofz.GoDaddyUpdater.Root.Implementation
+﻿namespace xofz.GoDaddyUpdater.UI.Forms
 {
     using System.Windows.Forms;
-    using xofz.GoDaddyUpdater.Framework;
 
-    public sealed class FormsClipboardCopier : ClipboardCopier
+    public sealed class FormsClipboardCopier 
+        : ClipboardCopier
     {
         void ClipboardCopier.Copy(string text)
         {

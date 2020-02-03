@@ -35,15 +35,15 @@
             var container = Assembly.GetExecutingAssembly();
             var path = assemblyName.Name + @".dll";
 
-            using (var s = container.GetManifestResourceStream(path))
+            using (var stream = container.GetManifestResourceStream(path))
             {
-                if (s == null)
+                if (stream == null)
                 {
                     return null;
                 }
 
-                var bytes = new byte[s.Length];
-                s.Read(bytes, 0, bytes.Length);
+                var bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, bytes.Length);
                 return Assembly.Load(bytes);
             }
         }

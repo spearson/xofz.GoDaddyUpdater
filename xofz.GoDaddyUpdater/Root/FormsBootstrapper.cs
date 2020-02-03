@@ -5,6 +5,7 @@
     using System.Windows.Forms;
     using xofz.Framework;
     using xofz.Framework.Logging;
+    using xofz.GoDaddyUpdater.Framework;
     using xofz.Presentation;
     using xofz.Root;
     using xofz.Root.Commands;
@@ -13,7 +14,6 @@
     using xofz.GoDaddyUpdater.Framework.SettingsProviders;
     using xofz.GoDaddyUpdater.Presentation;
     using xofz.GoDaddyUpdater.Root.Commands;
-    using xofz.GoDaddyUpdater.Root.Implementation;
     using xofz.GoDaddyUpdater.UI.Forms;
 
     public class FormsBootstrapper
@@ -64,7 +64,7 @@
             Messenger fm = new FormsMessenger();
             fm.Subscriber = s;
             e.Execute(new SetupMethodWebCommand(
-                new AppConfigSettingsProvider(),
+                new AppConfigSettingsProvider(w),
                 fm,
                 w));
             UnhandledExceptionEventHandler handler = this.onUnhandledException;
@@ -90,7 +90,8 @@
             w.Run<Navigator>(n => n.Present<HomePresenter>());
         }
 
-        protected virtual void setMainForm(MainForm mainForm)
+        protected virtual void setMainForm(
+            MainForm mainForm)
         {
             this.mainForm = mainForm;
         }
@@ -99,12 +100,12 @@
             object sender, 
             UnhandledExceptionEventArgs e)
         {
-            var w = this.executor.Get<SetupMethodWebCommand>().W;
-            w.Run<LogEditor>(le =>
+            var w = this.executor.Get<SetupMethodWebCommand>()?.W;
+            w?.Run<LogEditor>(le =>
                 {
                     LogHelpers.AddEntry(le, e);
                 },
-                "Exceptions");
+                LogNames.Exceptions);
         }
 
         protected MainForm mainForm;

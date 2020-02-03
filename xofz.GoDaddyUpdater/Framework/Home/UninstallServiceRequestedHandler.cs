@@ -11,29 +11,29 @@
     public class UninstallServiceRequestedHandler
     {
         public UninstallServiceRequestedHandler(
-            MethodWeb web)
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual void Handle(
             HomeUi ui,
             Do shutdown)
         {
-            var w = this.web;
-            var admin = w.Run<AdminChecker>()?.CurrentUserIsAdmin() ?? false;
+            var r = this.runner;
+            var admin = r.Run<AdminChecker>()?.CurrentUserIsAdmin() ?? false;
             if (!admin)
             {
-                w.Run<Messenger, UiReaderWriter>((m, uiRW) =>
+                r.Run<Messenger, UiReaderWriter>((m, uiRW) =>
                 {
                     var response = uiRW.Read(
                         m.Subscriber,
                         () => m.Question(
-                            "The app needs to run as administrator first."
+                            @"The app needs to run as administrator first."
                             + Environment.NewLine
-                            + "Please try again after the app is running as administrator."
+                            + @"Please try again after the app is running as administrator."
                             + Environment.NewLine
-                            + "Run the app as administrator?"));
+                            + @"Run the app as administrator?"));
                     if (response == Response.Yes)
                     {
                         var psi = new ProcessStartInfo
@@ -61,10 +61,10 @@
             p.StartInfo.WorkingDirectory =
                 Path.GetDirectoryName(
                     Assembly.GetExecutingAssembly()
-                    .Location);
+                        .Location);
             p.StartInfo.FileName = Path.Combine(
                 Path.GetDirectoryName(
-                        System
+                    System
                         .Runtime
                         .InteropServices
                         .RuntimeEnvironment
@@ -75,7 +75,7 @@
                 nameof(xofz) +
                 '.' +
                 nameof(GoDaddyUpdater) +
-                ".Service.exe";
+                @".Service.exe";
             try
             {
                 p.Start();
@@ -83,45 +83,56 @@
             }
             catch (Exception ex)
             {
-                w.Run<Messenger, UiReaderWriter>((m, uiRw) =>
-                {
-                    uiRw.Write(
-                        m.Subscriber,
-                        () => m.GiveError(
-                            "Error uninstalling service."
-                            + Environment.NewLine
-                            + ex.GetType()
-                            + Environment.NewLine
-                            + ex.Message));
-                });
+                r.Run<Messenger, UiReaderWriter>(
+                    (m, uiRW) =>
+                    {
+                        uiRW.Write(
+                            m.Subscriber,
+                            () =>
+                            {
+                                m.GiveError(
+                                    @"Error uninstalling service."
+                                    + Environment.NewLine
+                                    + ex.GetType()
+                                    + Environment.NewLine
+                                    + ex.Message);
+                            });
+                    });
                 return;
             }
 
             var ec = p.ExitCode;
             if (ec != 0)
             {
-                w.Run<Messenger, UiReaderWriter>((m, uiRW) =>
-                {
-                    uiRW.Write(
-                        m.Subscriber,
-                        () => m.GiveError(
-                            "Error uninstalling service."
-                            + Environment.NewLine
-                            + "Error code: " + ec));
-                });
+                r.Run<Messenger, UiReaderWriter>(
+                    (m, uiRW) =>
+                    {
+                        uiRW.Write(
+                            m.Subscriber,
+                            () =>
+                            {
+                                m.GiveError(
+                                    @"Error uninstalling service."
+                                    + Environment.NewLine
+                                    + @"Error code: " + ec);
+                            });
+                    });
                 return;
             }
 
-            w.Run<UiReaderWriter>(uiRw =>
+            r.Run<UiReaderWriter>(uiRW =>
             {
-                w.Run<Messenger>(m =>
+                r.Run<Messenger>(m =>
                 {
-                    uiRw.Write(
+                    uiRW.Write(
                         m.Subscriber,
-                        () => m.Inform("Service uninstalled."));
+                        () =>
+                        {
+                            m.Inform(@"Service uninstalled.");
+                        });
                 });
 
-                uiRw.Write(
+                uiRW.Write(
                     ui,
                     () =>
                     {
@@ -130,6 +141,6 @@
             });
         }
 
-        protected readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

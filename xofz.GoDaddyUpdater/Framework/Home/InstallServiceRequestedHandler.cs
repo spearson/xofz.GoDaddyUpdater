@@ -11,50 +11,50 @@
     public class InstallServiceRequestedHandler
     {
         public InstallServiceRequestedHandler(
-            MethodWeb web)
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual void Handle(
             HomeUi ui,
             Do shutdown)
         {
-            var w = this.web;
-            var admin = w.Run<AdminChecker>()?.CurrentUserIsAdmin() ?? false;
+            var r = this.runner;
+            var admin = r.Run<AdminChecker>()?.CurrentUserIsAdmin() ?? false;
             if (!admin)
             {
-                w.Run<Messenger, UiReaderWriter>(
+                r.Run<Messenger, UiReaderWriter>(
                     (m, uiRW) =>
-                {
-                    var response = uiRW.Read(
-                        m.Subscriber,
-                        () => m.Question(
-                            "The app needs to run as administrator first."
-                            + Environment.NewLine
-                            + "Please try again after the app is running as administrator."
-                            + Environment.NewLine
-                            + "Run the app as administrator?"));
-                    if (response == Response.Yes)
                     {
-                        // thanks go to the question and accepted answer for this:
-                        // https://stackoverflow.com/questions/16926232/run-process-as-administrator-from-a-non-admin-application
-                        var psi = new ProcessStartInfo
+                        var response = uiRW.Read(
+                            m.Subscriber,
+                            () => m.Question(
+                                @"The app needs to run as administrator first."
+                                + Environment.NewLine
+                                + @"Please try again after the app is running as administrator."
+                                + Environment.NewLine
+                                + @"Run the app as administrator?"));
+                        if (response == Response.Yes)
                         {
-                            UseShellExecute = true,
-                            Verb = "runas",
-                            WorkingDirectory = Environment.CurrentDirectory,
-                            FileName = Path.GetFileName(
-                                Assembly.GetEntryAssembly().Location)
-                        };
+                            // thanks go to the question and accepted answer for this:
+                            // https://stackoverflow.com/questions/16926232/run-process-as-administrator-from-a-non-admin-application
+                            var psi = new ProcessStartInfo
+                            {
+                                UseShellExecute = true,
+                                Verb = @"runas",
+                                WorkingDirectory = Environment.CurrentDirectory,
+                                FileName = Path.GetFileName(
+                                    Assembly.GetEntryAssembly().Location)
+                            };
 
-                        Process.Start(psi);
-                        uiRW.WriteSync(
-                            ui,
-                            ui.HideNotifyIcon);
-                        shutdown?.Invoke();
-                    }
-                });
+                            Process.Start(psi);
+                            uiRW.WriteSync(
+                                ui,
+                                ui.HideNotifyIcon);
+                            shutdown?.Invoke();
+                        }
+                    });
 
                 return;
             }
@@ -64,10 +64,10 @@
             p.StartInfo.WorkingDirectory =
                 Path.GetDirectoryName(
                     Assembly.GetExecutingAssembly()
-                    .Location);
+                        .Location);
             p.StartInfo.FileName = Path.Combine(
                 Path.GetDirectoryName(
-                        System
+                    System
                         .Runtime
                         .InteropServices
                         .RuntimeEnvironment
@@ -77,7 +77,7 @@
                 nameof(xofz) +
                 '.' +
                 nameof(GoDaddyUpdater) +
-                ".Service.exe";
+                @".Service.exe";
             try
             {
                 p.Start();
@@ -85,50 +85,61 @@
             }
             catch (Exception ex)
             {
-                w.Run<Messenger, UiReaderWriter>((m, uiRw) =>
-                {
-                    uiRw.Write(
-                        m.Subscriber,
-                        () => m.GiveError(
-                            "Error installing service."
-                            + Environment.NewLine
-                            + ex.GetType()
-                            + Environment.NewLine
-                            + ex.Message));
-                });
+                r.Run<Messenger, UiReaderWriter>(
+                    (m, uiRw) =>
+                    {
+                        uiRw.Write(
+                            m.Subscriber,
+                            () => m.GiveError(
+                                @"Error installing service."
+                                + Environment.NewLine
+                                + ex.GetType()
+                                + Environment.NewLine
+                                + ex.Message));
+                    });
             }
 
             var ec = p.ExitCode;
             if (ec == 0)
             {
-                w.Run<UiReaderWriter>(uiRW =>
+                r.Run<UiReaderWriter>(uiRW =>
                 {
-                    w.Run<Messenger>(m =>
+                    r.Run<Messenger>(m =>
                     {
                         uiRW.Write(
                             m.Subscriber,
-                            () => m.Inform("Service installed!"));
+                            () =>
+                            {
+                                m.Inform(@"Service installed!");
+                            });
                     });
 
                     uiRW.Write(
                         ui,
-                        () => ui.ServiceInstalled = true);
+                        () =>
+                        {
+                            ui.ServiceInstalled = true;
+                        });
                 });
 
                 return;
             }
 
-            w.Run<Messenger, UiReaderWriter>((m, uiRw) =>
-            {
-                uiRw.Write(
-                    m.Subscriber,
-                    () => m.GiveError(
-                        "Error installing service."
-                        + Environment.NewLine
-                        + "Error code: " + ec));
-            });
+            r.Run<Messenger, UiReaderWriter>(
+                (m, uiRw) =>
+                {
+                    uiRw.Write(
+                        m.Subscriber,
+                        () =>
+                        {
+                            m.GiveError(
+                                @"Error installing service."
+                                + Environment.NewLine
+                                + @"Error code: " + ec);
+                        });
+                });
         }
 
-        protected readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

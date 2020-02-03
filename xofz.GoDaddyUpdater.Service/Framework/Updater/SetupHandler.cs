@@ -4,30 +4,31 @@
 
     public class SetupHandler
     {
-        public SetupHandler(MethodWeb web)
+        public SetupHandler(
+            MethodRunner runner)
         {
-            this.web = web;
+            this.runner = runner;
         }
 
         public virtual void Handle(
             Do<string> applyServiceName)
         {
-            var w = this.web;
-            w.Run<GlobalSettingsHolder>(settings =>
+            var r = this.runner;
+            r.Run<GlobalSettingsHolder>(settings =>
             {
                 // must match value in ProjectInstaller ctor
                 applyServiceName(
-                    "gdu."
+                    @"gdu."
                     + settings.Subdomain
                     + '.'
                     + settings.Domain
                     + '.'
                     + settings
                         .HttpExternalIpProviderUri
-                        .Replace('/', '-'));
+                        ?.Replace('/', '-'));
             });
         }
 
-        protected readonly MethodWeb web;
+        protected readonly MethodRunner runner;
     }
 }

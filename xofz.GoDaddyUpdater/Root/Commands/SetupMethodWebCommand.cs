@@ -14,14 +14,14 @@
         public SetupMethodWebCommand(
             SettingsProvider settingsProvider,
             Messenger messenger,
-            MethodWeb web)
+            MethodWebV2 web)
         {
             this.settingsProvider = settingsProvider;
             this.messenger = messenger;
             this.web = web;
         }
 
-        public virtual MethodWeb W => this.web;
+        public virtual MethodWebV2 W => this.web;
 
         public override void Execute()
         {
@@ -48,8 +48,9 @@
             w.RegisterDependency(
                 new HttpClientFactory(w));
             w.RegisterDependency(
-                new TextFileLog(@"Exceptions.log"),
-                "Exceptions");
+                new TextFileLog(
+                    @"Exceptions.log"),
+                LogNames.Exceptions);
             w.RegisterDependency(
                 new VersionReader(
                     Assembly.GetExecutingAssembly()));
@@ -59,6 +60,6 @@
 
         protected readonly SettingsProvider settingsProvider;
         protected readonly Messenger messenger;
-        protected readonly MethodWeb web;
+        protected readonly MethodWebV2 web;
     }
 }
