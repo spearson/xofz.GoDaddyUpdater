@@ -26,6 +26,7 @@
             try
             {
                 config = ConfigurationManager.OpenExeConfiguration(exePath);
+                goto readConfig;
             }
             catch
             {
@@ -37,11 +38,20 @@
                     .Append(nameof(GoDaddyUpdater))
                     .Append(@".exe")
                     .ToString();
-                config = ConfigurationManager.OpenExeConfiguration(exePath);
             }
 
+            try
+            {
+                config = ConfigurationManager.OpenExeConfiguration(exePath);
+            }
+            catch
+            {
+                return new GlobalSettingsHolder();
+            }
+
+            readConfig:
             var section = config
-                .SectionGroups["applicationSettings"]
+                .SectionGroups[@"applicationSettings"]
                 ?.Sections[
                     nameof(xofz) +
                     '.' + 

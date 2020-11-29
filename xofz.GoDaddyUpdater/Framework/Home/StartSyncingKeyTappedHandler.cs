@@ -17,7 +17,7 @@
             HomeUi ui)
         {
             var r = this.runner;
-            r.Run<xofz.Framework.Timer>(t =>
+            r?.Run<xofz.Framework.Timer>(t =>
                 {
                     t.Stop();
                     r.Run<LatchHolder>(latch =>
@@ -28,7 +28,7 @@
                 },
                 DependencyNames.Timer);
 
-            r.Run<UiReaderWriter>(uiRw =>
+            r?.Run<UiReaderWriter>(uiRw =>
             {
                 uiRw.WriteSync(
                     ui,
@@ -39,12 +39,12 @@
                     });
             });
 
-            r.Run<TimerHandler>(handler =>
+            r?.Run<TimerHandler>(handler =>
             {
                 handler.Handle(ui);
             });
 
-            r.Run<xofz.Framework.Timer>(
+            r?.Run<xofz.Framework.Timer>(
                 t =>
                 {
                     t.Start(TimeSpan.FromMinutes(5));

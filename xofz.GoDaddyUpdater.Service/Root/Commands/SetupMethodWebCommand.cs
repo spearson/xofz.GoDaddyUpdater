@@ -22,10 +22,10 @@
         protected virtual void registerDependencies()
         {
             var w = this.web;
-            w.RegisterDependency(
+            w?.RegisterDependency(
                 new EventSubscriber());
-            w.RegisterDependency(
-                this.settingsProvider.Provide());
+            w?.RegisterDependency(
+                this.settingsProvider?.Provide());
 
         }
 

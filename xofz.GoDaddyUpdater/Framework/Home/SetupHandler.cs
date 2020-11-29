@@ -16,7 +16,7 @@
             HomeUi ui)
         {
             var r = this.runner;
-            r.Run<GlobalSettingsHolder, UiReaderWriter>(
+            r?.Run<GlobalSettingsHolder, UiReaderWriter>(
                 (settings, uiRW) =>
                 {
                     var startKeyEnabled = !settings.AutoStart;
@@ -29,7 +29,7 @@
                         });
                 });
 
-            r.Run<GlobalSettingsHolder, UiReaderWriter>(
+            r?.Run<GlobalSettingsHolder, UiReaderWriter>(
                 (settings, uiRW) =>
                 {
                     var hostname = settings.Subdomain + '.' + settings.Domain;
@@ -43,7 +43,7 @@
                         });
                 });
 
-            r.Run<VersionReader, UiReaderWriter>(
+            r?.Run<VersionReader, UiReaderWriter>(
                 (vr, uiRW) =>
                 {
                     var version = vr.Read();

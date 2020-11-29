@@ -15,23 +15,23 @@
             this.runner = runner;
         }
 
-        private UpdaterService()
+        public UpdaterService()
         {
             this.InitializeComponent();
         }
 
         public virtual void Setup()
         {
-            if (Interlocked.CompareExchange(
+            const byte one = 1;
+            if (Interlocked.Exchange(
                 ref this.setupIf1, 
-                1, 
-                0) == 1)
+                one) == one)
             {
                 return;
             }
 
             var r = this.runner;
-            r.Run<EventSubscriber>(sub =>
+            r?.Run<EventSubscriber>(sub =>
             {
                 r.Run<xofz.Framework.Timer>(t =>
                 {
@@ -44,7 +44,7 @@
 
             Do<string> applyServiceName =
                 name => this.ServiceName = name;
-            r.Run<SetupHandler>(handler =>
+            r?.Run<SetupHandler>(handler =>
             {
                 handler.Handle(applyServiceName);
             });
@@ -54,7 +54,7 @@
         protected override void OnStart(string[] args)
         {
             var r = this.runner;
-            r.Run<StartHandler>(handler =>
+            r?.Run<StartHandler>(handler =>
             {
                 handler.Handle();
             });
@@ -63,7 +63,7 @@
         protected override void OnStop()
         {
             var r = this.runner;
-            r.Run<StopHandler>(handler =>
+            r?.Run<StopHandler>(handler =>
             {
                 handler.Handle();
             });
@@ -72,7 +72,7 @@
         protected virtual void timer_Elapsed()
         {
             var r = this.runner;
-            r.Run<TimerHandler>(handler =>
+            r?.Run<TimerHandler>(handler =>
             {
                 handler.Handle();
             });

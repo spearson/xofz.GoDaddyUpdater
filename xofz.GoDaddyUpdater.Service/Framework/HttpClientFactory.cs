@@ -21,7 +21,7 @@
         {
             var r = this.runner;
             var client = new HttpClient();
-            r.Run<GlobalSettingsHolder>(settings =>
+            r?.Run<GlobalSettingsHolder>(settings =>
             {
                 client
                     .DefaultRequestHeaders

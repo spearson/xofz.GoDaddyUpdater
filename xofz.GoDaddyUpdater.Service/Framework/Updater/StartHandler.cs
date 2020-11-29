@@ -14,14 +14,15 @@
         public virtual void Handle()
         {
             var r = this.runner;
-            r.Run<TimerHandler>(handler =>
+            r?.Run<TimerHandler>(handler =>
             {
                 handler.Handle();
             });
 
-            r.Run<xofz.Framework.Timer>(t =>
+            r?.Run<xofz.Framework.Timer>(t =>
             {
-                t.Start(TimeSpan.FromMinutes(5));
+                t.Start(
+                    TimeSpan.FromMinutes(5));
             });
         }
 

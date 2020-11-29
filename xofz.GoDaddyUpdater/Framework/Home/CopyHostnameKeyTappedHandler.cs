@@ -16,7 +16,7 @@
             HomeUi ui)
         {
             var r = this.runner;
-            r.Run<UiReaderWriter, ClipboardCopier>(
+            r?.Run<UiReaderWriter, ClipboardCopier>(
                 (uiRW, copier) =>
                 {
                     uiRW.Write(

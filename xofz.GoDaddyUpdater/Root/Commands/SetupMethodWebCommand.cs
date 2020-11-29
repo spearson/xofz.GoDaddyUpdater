@@ -31,30 +31,30 @@
         protected virtual void registerDependencies()
         {
             var w = this.web;
-            w.RegisterDependency(
+            w?.RegisterDependency(
                 new UiReaderWriter());
-            w.RegisterDependency(
+            w?.RegisterDependency(
                 new EventRaiser());
-            w.RegisterDependency(
+            w?.RegisterDependency(
                 new EventSubscriber());
-            w.RegisterDependency(
+            w?.RegisterDependency(
                 new NavigatorV2(w));
-            w.RegisterDependency(
+            w?.RegisterDependency(
                 this.messenger);
-            w.RegisterDependency(
+            w?.RegisterDependency(
                 this.settingsProvider.Provide());
-            w.RegisterDependency(
-                (Gen<HttpMessageHandler>)(() => default(HttpMessageHandler)));
-            w.RegisterDependency(
+            w?.RegisterDependency(
+                (Gen<HttpMessageHandler>)(() => default));
+            w?.RegisterDependency(
                 new HttpClientFactory(w));
-            w.RegisterDependency(
+            w?.RegisterDependency(
                 new TextFileLog(
                     @"Exceptions.log"),
                 LogNames.Exceptions);
-            w.RegisterDependency(
+            w?.RegisterDependency(
                 new VersionReader(
                     Assembly.GetExecutingAssembly()));
-            w.RegisterDependency(
+            w?.RegisterDependency(
                 new ServiceChecker(w));
         }
 

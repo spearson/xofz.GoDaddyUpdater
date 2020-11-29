@@ -5,6 +5,10 @@
 
     public class AdminChecker
     {
+        public AdminChecker()
+        {
+        }
+
         public AdminChecker(
             MethodRunner runner)
         {

@@ -16,7 +16,7 @@
         {
             var r = this.runner;
             var exists = false;
-            r.Run<GlobalSettingsHolder>(settings =>
+            r?.Run<GlobalSettingsHolder>(settings =>
             {
                 var sc = ServiceController
                     .GetServices()
@@ -29,7 +29,7 @@
                         + settings
                             .HttpExternalIpProviderUri
                             .Replace('/', '-'));
-                if (sc != default(ServiceController))
+                if (sc != null)
                 {
                     exists = true;
                 }

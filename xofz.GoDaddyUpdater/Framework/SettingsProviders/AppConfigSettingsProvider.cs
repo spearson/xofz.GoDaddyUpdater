@@ -3,8 +3,13 @@
     using xofz.Framework;
     using xofz.GoDaddyUpdater.Properties;
 
-    public sealed class AppConfigSettingsProvider : SettingsProvider
+    public sealed class AppConfigSettingsProvider 
+        : SettingsProvider
     {
+        public AppConfigSettingsProvider()
+        {
+        }
+
         public AppConfigSettingsProvider(
             MethodRunner runner)
         {

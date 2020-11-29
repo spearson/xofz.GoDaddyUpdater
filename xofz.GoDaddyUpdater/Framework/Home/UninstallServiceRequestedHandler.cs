@@ -24,8 +24,14 @@
             var admin = r.Run<AdminChecker>()?.CurrentUserIsAdmin() ?? false;
             if (!admin)
             {
-                r.Run<Messenger, UiReaderWriter>((m, uiRW) =>
+                r?.Run<Messenger, UiReaderWriter>((m, uiRW) =>
                 {
+                    var entryAssembly = Assembly.GetEntryAssembly();
+                    if (entryAssembly == null)
+                    {
+                        return;
+                    }
+
                     var response = uiRW.Read(
                         m.Subscriber,
                         () => m.Question(
@@ -39,10 +45,10 @@
                         var psi = new ProcessStartInfo
                         {
                             UseShellExecute = true,
-                            Verb = "runas",
+                            Verb = @"runas",
                             WorkingDirectory = Environment.CurrentDirectory,
                             FileName = Path.GetFileName(
-                                Assembly.GetEntryAssembly().Location)
+                                entryAssembly.Location)
                         };
 
                         Process.Start(psi);
@@ -56,26 +62,47 @@
                 return;
             }
 
-            var p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.WorkingDirectory =
-                Path.GetDirectoryName(
-                    Assembly.GetExecutingAssembly()
-                        .Location);
-            p.StartInfo.FileName = Path.Combine(
-                Path.GetDirectoryName(
-                    System
-                        .Runtime
-                        .InteropServices
-                        .RuntimeEnvironment
-                        .GetRuntimeDirectory()),
-                @"installutil.exe");
-            p.StartInfo.Arguments =
-                "/u " +
-                nameof(xofz) +
-                '.' +
-                nameof(GoDaddyUpdater) +
-                @".Service.exe";
+            var exAssembly = Assembly.GetExecutingAssembly();
+            if (exAssembly == null)
+            {
+                return;
+            }
+
+            var wd = Path.GetDirectoryName(
+                exAssembly.Location);
+            if (wd == null)
+            {
+                return;
+            }
+
+            var rtd = System
+                .Runtime
+                .InteropServices
+                .RuntimeEnvironment
+                .GetRuntimeDirectory();
+            var rtdn = Path.GetDirectoryName(
+                rtd);
+            if (rtdn == null)
+            {
+                return;
+            }
+
+            var p = new Process
+            {
+                StartInfo =
+                {
+                    UseShellExecute = false,
+                    WorkingDirectory = wd,
+                    FileName = Path.Combine(
+                        rtdn,
+                        @"installutil.exe"),
+                    Arguments = "/u " +
+                                nameof(xofz) +
+                                '.' +
+                                nameof(GoDaddyUpdater) +
+                                @".Service.exe"
+                }
+            };
             try
             {
                 p.Start();
@@ -83,7 +110,7 @@
             }
             catch (Exception ex)
             {
-                r.Run<Messenger, UiReaderWriter>(
+                r?.Run<Messenger, UiReaderWriter>(
                     (m, uiRW) =>
                     {
                         uiRW.Write(
@@ -97,6 +124,13 @@
                                     + Environment.NewLine
                                     + ex.Message);
                             });
+
+                        uiRW.Write(
+                            ui,
+                            () =>
+                            {
+                                ui.ServiceInstalled = true;
+                            });
                     });
                 return;
             }
@@ -104,7 +138,7 @@
             var ec = p.ExitCode;
             if (ec != 0)
             {
-                r.Run<Messenger, UiReaderWriter>(
+                r?.Run<Messenger, UiReaderWriter>(
                     (m, uiRW) =>
                     {
                         uiRW.Write(
@@ -116,11 +150,19 @@
                                     + Environment.NewLine
                                     + @"Error code: " + ec);
                             });
+
+                        uiRW.Write(
+                            ui,
+                            () =>
+                            {
+                                ui.ServiceInstalled = true;
+                            });
                     });
+
                 return;
             }
 
-            r.Run<UiReaderWriter>(uiRW =>
+            r?.Run<UiReaderWriter>(uiRW =>
             {
                 r.Run<Messenger>(m =>
                 {

@@ -15,7 +15,7 @@
             HomeUi ui)
         {
             var r = this.runner;
-            r.Run<xofz.Framework.Timer>(t =>
+            r?.Run<xofz.Framework.Timer>(t =>
                 {
                     t.Stop();
                     r.Run<LatchHolder>(latch =>

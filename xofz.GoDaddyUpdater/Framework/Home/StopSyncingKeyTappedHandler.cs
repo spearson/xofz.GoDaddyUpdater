@@ -16,7 +16,7 @@
             HomeUi ui)
         {
             var r = this.runner;
-            r.Run<UiReaderWriter>(uiRw =>
+            r?.Run<UiReaderWriter>(uiRw =>
             {
                 uiRw.Write(
                     ui,

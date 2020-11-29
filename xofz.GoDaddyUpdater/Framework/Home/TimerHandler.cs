@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Sockets;
@@ -26,13 +25,13 @@
             HomeUi ui)
         {
             var r = this.runner;
-            r.Run<LatchHolder>(latch =>
+            r?.Run<LatchHolder>(latch =>
                 {
                     latch.Latch.Reset();
                 },
                 DependencyNames.TimerLatch);
             string currentIP = null;
-            r.Run<
+            r?.Run<
                 HttpClientFactory,
                 GlobalSettingsHolder,
                 Messages>(
@@ -67,7 +66,7 @@
                     });
                 });
 
-            r.Run<
+            r?.Run<
                 HttpClientFactory,
                 GlobalSettingsHolder,
                 Messages>(
@@ -103,7 +102,13 @@
                         .Append(settings.Subdomain)
                         .ToString();
 
-                    using (var hc = factory.CreateGoDaddy())
+                    var hc = factory.CreateGoDaddy();
+                    if (hc == null)
+                    {
+                        return;
+                    }
+
+                    using (hc)
                     {
                         hc.Timeout = TimeSpan.FromSeconds(12);
                         Record record;
@@ -113,7 +118,7 @@
                         {
                             task.Wait();
                         }
-                        catch (Exception ex)
+                        catch
                         {
                             syncedIP = errorReadingFromDnsMessage;
                             lastChecked = DateTime.Now;
@@ -134,7 +139,7 @@
                         var records = JsonConvert.DeserializeObject<ICollection<Record>>(
                             json);
                         lastChecked = DateTime.Now;
-                        if (records.Count == 0)
+                        if (records.Count < 1)
                         {
                             record = new Record
                             {
@@ -152,12 +157,13 @@
                             goto checkSync;
                         }
 
-                        record = records.First();
+                        record = EnumerableHelpers.First(
+                            records);
                         syncedIP = record.data;
                         if (syncedIP == currentIP)
                         {
                             var lsip = this.lastSyncedIP;
-                            if (lsip != currentIP && lsip != default(string))
+                            if (lsip != currentIP && lsip != default)
                             {
                                 syncedByService = true;
                                 goto afterSync;
@@ -198,6 +204,11 @@
                         var syncTask = hc.PutAsync(
                             uri,
                             content);
+                        if (syncTask == null)
+                        {
+                            return;
+                        }
+
                         try
                         {
                             syncTask.Wait();
@@ -212,6 +223,10 @@
                         }
 
                         response = syncTask.Result;
+                        if (response == null)
+                        {
+                            return;
+                        }
 
                         afterSync:
                         if (syncedByService || response.IsSuccessStatusCode)
@@ -229,7 +244,10 @@
                             {
                                 uiRw.Write(
                                     ui,
-                                    () => ui.LastSynced = lastSynced);
+                                    () =>
+                                    {
+                                        ui.LastSynced = lastSynced;
+                                    });
                             });
                             syncedIP = currentIP;
                             goto setSyncedIP;
@@ -247,11 +265,11 @@
                     }
 
                     setSyncedIP:
-                    r.Run<UiReaderWriter>(uiRw =>
+                    r.Run<UiReaderWriter>(uiRW =>
                     {
                         var lastCheckedString = lastChecked.ToString(
                             CultureInfo.CurrentUICulture);
-                        uiRw.Write(
+                        uiRW.Write(
                             ui,
                             () =>
                             {
@@ -278,7 +296,7 @@
                     this.setLastSyncedIP(syncedIP);
                 });
 
-            r.Run<ServiceChecker, UiReaderWriter>(
+            r?.Run<ServiceChecker, UiReaderWriter>(
                 (checker, uiRw) =>
             {
                 var exists = checker.ServiceExists();
@@ -290,7 +308,7 @@
                     });
             });
 
-            r.Run<LatchHolder>(latch =>
+            r?.Run<LatchHolder>(latch =>
                 {
                     latch.Latch.Set();
                 },

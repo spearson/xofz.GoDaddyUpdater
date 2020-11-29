@@ -19,16 +19,16 @@
 
         public void Setup()
         {
-            if (Interlocked.CompareExchange(
+            const byte one = 1;
+            if (Interlocked.Exchange(
                     ref this.setupIf1, 
-                    1, 
-                    0) == 1)
+                    one) == one)
             {
                 return;
             }
 
             var r = this.runner;
-            r.Run<EventSubscriber>(subscriber =>
+            r?.Run<EventSubscriber>(subscriber =>
             {
                 subscriber.Subscribe(
                     this.ui,
@@ -72,19 +72,19 @@
                     DependencyNames.Timer);
             });
 
-            r.Run<SetupHandler>(handler =>
+            r?.Run<SetupHandler>(handler =>
             {
                 handler.Handle(this.ui);
             });
 
-            r.Run<Navigator>(nav => 
+            r?.Run<Navigator>(nav => 
                 nav.RegisterPresenter(this));
         }
 
         public override void Start()
         {
             var r = this.runner;
-            r.Run<StartHandler>(handler =>
+            r?.Run<StartHandler>(handler =>
             {
                 handler.Handle(this.ui);
             });
@@ -93,7 +93,7 @@
         public override void Stop()
         {
             var r = this.runner;
-            r.Run<StopHandler>(handler =>
+            r?.Run<StopHandler>(handler =>
             {
                 handler.Handle(this.ui);
             });
@@ -102,7 +102,7 @@
         private void ui_CopyHostnameKeyTapped()
         {
             var r = this.runner;
-            r.Run<CopyHostnameKeyTappedHandler>(
+            r?.Run<CopyHostnameKeyTappedHandler>(
                 handler =>
                 {
                     handler.Handle(this.ui);
@@ -112,7 +112,7 @@
         private void ui_CopyCurrentIpKeyTapped()
         {
             var r = this.runner;
-            r.Run<CopyCurrentIpKeyTappedHandler>(
+            r?.Run<CopyCurrentIpKeyTappedHandler>(
                 handler =>
                 {
                     handler.Handle(this.ui);
@@ -122,7 +122,7 @@
         private void ui_CopySyncedIpKeyTapped()
         {
             var r = this.runner;
-            r.Run<CopySyncedIpKeyTappedHandler>(
+            r?.Run<CopySyncedIpKeyTappedHandler>(
                 handler =>
                 {
                     handler.Handle(this.ui);
@@ -132,7 +132,7 @@
         private void ui_StartSyncingKeyTapped()
         {
             var r = this.runner;
-            r.Run<StartSyncingKeyTappedHandler>(handler =>
+            r?.Run<StartSyncingKeyTappedHandler>(handler =>
             {
                 handler.Handle(this.ui);
             });
@@ -141,7 +141,7 @@
         private void ui_StopSyncingKeyTapped()
         {
             var r = this.runner;
-            r.Run<StopSyncingKeyTappedHandler>(handler =>
+            r?.Run<StopSyncingKeyTappedHandler>(handler =>
             {
                 handler.Handle(this.ui);
             });
@@ -150,7 +150,7 @@
         private void ui_ExitRequested()
         {
             var r = this.runner;
-            r.Run<Navigator>(nav =>
+            r?.Run<Navigator>(nav =>
             {
                 Do shutdown = nav.Present<ShutdownPresenter>;
                 r.Run<ExitRequestedHandler>(handler =>
@@ -165,7 +165,7 @@
         private void ui_InstallServiceRequested()
         {
             var r = this.runner;
-            r.Run<Navigator>(nav =>
+            r?.Run<Navigator>(nav =>
             {
                 Do shutdown = nav.Present<ShutdownPresenter>;
                 r.Run<InstallServiceRequestedHandler>(handler =>
@@ -180,7 +180,7 @@
         private void ui_UninstallServiceRequested()
         {
             var r = this.runner;
-            r.Run<Navigator>(nav =>
+            r?.Run<Navigator>(nav =>
             {
                 Do shutdown = nav.Present<ShutdownPresenter>;
                 r.Run<UninstallServiceRequestedHandler>(handler =>
@@ -195,7 +195,7 @@
         private void timer_Elapsed()
         {
             var r = this.runner;
-            r.Run<TimerHandler>(handler =>
+            r?.Run<TimerHandler>(handler =>
             {
                 handler.Handle(this.ui);
             });

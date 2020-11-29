@@ -13,10 +13,21 @@
 
             var bootstrapper = new ServiceBootstrapper();
             bootstrapper.Bootstrap();
-            var services = new[]
+            var service = bootstrapper.Service;
+            ServiceBase[] services;
+            if (service != null)
             {
-                bootstrapper.Service
-            };
+                services = new[]
+                {
+                    bootstrapper.Service
+                };
+
+                goto run;
+            }
+
+            services = new ServiceBase[0];
+            
+            run:
             ServiceBase.Run(services);
         }
 

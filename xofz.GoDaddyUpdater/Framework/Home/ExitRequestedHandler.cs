@@ -17,7 +17,7 @@
             Do shutdown)
         {
             var r = this.runner;
-            r.Run<UiReaderWriter>(uiRW =>
+            r?.Run<UiReaderWriter>(uiRW =>
             {
                 uiRW.WriteSync(
                     ui,

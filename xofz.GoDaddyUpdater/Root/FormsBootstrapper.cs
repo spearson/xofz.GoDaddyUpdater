@@ -33,15 +33,16 @@
 
         public virtual void Bootstrap()
         {
-            if (Interlocked.CompareExchange(
+            const byte one = 1;
+            if (Interlocked.Exchange(
                     ref this.bootstrappedIf1, 
-                    1, 
-                    0) == 1)
+                    one) == one)
             {
                 return;
             }
 
-            this.setMainForm(new MainForm());
+            this.setMainForm(
+                new MainForm());
             var finished = new ManualResetEvent(false);
             ThreadPool.QueueUserWorkItem(o =>
             {
@@ -60,15 +61,16 @@
         {
             var s = this.mainForm;
             var e = this.executor;
-            var w = new MethodWebV2();
             Messenger fm = new FormsMessenger();
             fm.Subscriber = s;
-            e.Execute(new SetupMethodWebCommand(
-                new AppConfigSettingsProvider(w),
+            e?.Execute(new SetupMethodWebCommand(
+                new AppConfigSettingsProvider(),
                 fm,
-                w));
+                new MethodWebV2()));
+
+            var w = e?.Get<SetupMethodWebCommand>()?.W;
             UnhandledExceptionEventHandler handler = this.onUnhandledException;
-            w.Run<EventSubscriber>(subscriber =>
+            w?.Run<EventSubscriber>(subscriber =>
             {
                 var cd = AppDomain.CurrentDomain;
                 subscriber.Subscribe(
@@ -77,17 +79,18 @@
                     handler);
             });
 
-            e.Execute(new SetupHomeCommand(
+            e?.Execute(new SetupHomeCommand(
                     s,
                     new FormsClipboardCopier(),
                     w));
             ThreadPool.QueueUserWorkItem(o =>
             {
-                e.Execute(new SetupShutdownCommand(
+                e?.Execute(new SetupShutdownCommand(
                     w));
             });
                 
-            w.Run<Navigator>(n => n.Present<HomePresenter>());
+            w?.Run<Navigator>(nav => 
+                nav.Present<HomePresenter>());
         }
 
         protected virtual void setMainForm(

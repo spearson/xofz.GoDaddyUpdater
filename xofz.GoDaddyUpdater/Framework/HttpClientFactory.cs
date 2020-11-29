@@ -16,7 +16,7 @@
         {
             var r = this.runner;
             var client = default(HttpClient);
-            r.Run<Gen<HttpMessageHandler>>(
+            r?.Run<Gen<HttpMessageHandler>>(
                 createHandler =>
                 {
                     var handler = createHandler();
@@ -35,12 +35,12 @@
         public virtual HttpClient CreateGoDaddy()
         {
             var r = this.runner;
-            var client = default(HttpClient);
-            r.Run<Gen<HttpMessageHandler>, GlobalSettingsHolder>(
+            HttpClient client = null;
+            r?.Run<Gen<HttpMessageHandler>, GlobalSettingsHolder>(
                 (createHandler, settings) =>
             {
                 var handler = createHandler();
-                if (handler == default(HttpMessageHandler))
+                if (handler == null)
                 {
                     client = new HttpClient();
                     goto setHeaderAuth;

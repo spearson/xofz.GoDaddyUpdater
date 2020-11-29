@@ -23,10 +23,12 @@
 
         public virtual void Bootstrap()
         {
-            if (Interlocked.CompareExchange(
+            const byte zero = 0;
+            const byte one = 1;
+
+            if (Interlocked.Exchange(
                     ref this.bootstrappedIf1, 
-                    1, 
-                    0) == 1)
+                    one) == one)
             {
                 return;
             }
@@ -34,14 +36,14 @@
             var e = this.executor;
             var w = new xofz.Framework.MethodWebV2();
             e
-                .Execute(new SetupMethodWebCommand(
+                ?.Execute(new SetupMethodWebCommand(
                     new ExeConfigSettingsProvider(),
                     w))
-                .Execute(new SetupUpdaterCommand(
+                ?.Execute(new SetupUpdaterCommand(
                     w));
 
             this.updaterService = e
-                .Get<SetupUpdaterCommand>()
+                ?.Get<SetupUpdaterCommand>()
                 .UpdaterService;
         }
 

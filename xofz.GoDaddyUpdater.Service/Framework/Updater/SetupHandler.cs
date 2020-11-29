@@ -14,7 +14,7 @@
             Do<string> applyServiceName)
         {
             var r = this.runner;
-            r.Run<GlobalSettingsHolder>(settings =>
+            r?.Run<GlobalSettingsHolder>(settings =>
             {
                 // must match value in ProjectInstaller ctor
                 applyServiceName(

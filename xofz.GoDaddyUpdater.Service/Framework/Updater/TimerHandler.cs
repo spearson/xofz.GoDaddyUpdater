@@ -23,7 +23,7 @@
         {
             var r = this.runner;
             string currentIP = null;
-            r.Run<HttpClientFactory, GlobalSettingsHolder>(
+            r?.Run<HttpClientFactory, GlobalSettingsHolder>(
                 (factory, settings) =>
                 {
                     using (var hc = factory.Create())
@@ -50,7 +50,7 @@
                 return;
             }
 
-            r.Run<HttpClientFactory, GlobalSettingsHolder>(
+            r?.Run<HttpClientFactory, GlobalSettingsHolder>(
                 (factory, settings) =>
                 {
                     string syncedIP;
