@@ -59,7 +59,7 @@
 
         string HomeUi.IpProviderUri
         {
-            get => this.ipProviderUri;
+            get => this.providerUri;
 
             set
             {
@@ -77,10 +77,10 @@
         protected virtual void setIpProviderUri(
             string ipProviderUri)
         {
-            this.ipProviderUri = ipProviderUri;
+            this.providerUri = ipProviderUri;
         }
 
-        protected string ipProviderUri;
+        protected string providerUri;
 
         string HomeUi.CurrentIP
         {
@@ -164,17 +164,17 @@
 
         bool HomeUi.ServiceInstalled
         {
-            get => this.serviceInstalled;
+            get => this.serviceIsInstalled;
 
             set
             {
-                this.serviceInstalled = value;
+                this.serviceIsInstalled = value;
                 this.installServiceToolStripMenuItem.Enabled = !value;
                 this.uninstallServiceToolStripMenuItem.Enabled = value;
             }
         }
 
-        protected bool serviceInstalled;
+        protected bool serviceIsInstalled;
 
         void HomeUi.HideNotifyIcon()
         {
