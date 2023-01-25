@@ -71,7 +71,7 @@
   </Target>
   
     <UsingTask
-    AssemblyFile="H:\Dropbox\Libraries\xUnit\xunit.runner.msbuild.dll"
+    AssemblyFile="H:\OneDrive\Libraries\xUnit\xunit.runner.msbuild.net452.dll"
     TaskName="Xunit.Runner.MSBuild.xunit"
   />
   

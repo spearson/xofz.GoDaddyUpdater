@@ -25,7 +25,7 @@
                 goto run;
             }
 
-            services = new ServiceBase[0];
+            services = Array.Empty<ServiceBase>();
             
             run:
             ServiceBase.Run(services);

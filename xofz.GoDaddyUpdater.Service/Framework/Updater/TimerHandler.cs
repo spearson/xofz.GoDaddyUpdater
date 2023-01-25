@@ -50,7 +50,7 @@
                 return;
             }
 
-            r?.Run<HttpClientFactory, GlobalSettingsHolder>(
+            r.Run<HttpClientFactory, GlobalSettingsHolder>(
                 (factory, settings) =>
                 {
                     string syncedIP;
@@ -102,15 +102,19 @@
                             .Content
                             .ReadAsStringAsync()
                             .Result;
-                        var records = JsonConvert.DeserializeObject<ICollection<Record>>(
-                            json);
-                        if (records.Count < 1)
+                        var records = JsonConvert
+                                          .DeserializeObject<ICollection<Record>>(
+                                              json)
+                                      ?? new XLinkedList<Record>();
+                        const byte one = 1;
+                        if (records.Count < one)
                         {
+                            const short defaultTtl = 3600;
                             record = new Record
                             {
                                 data = currentIP,
                                 name = settings.Subdomain,
-                                ttl = 3600,
+                                ttl = defaultTtl,
                                 type = aaaa ? @"AAAA" : @"A"
                             };
                             records.Add(record);
@@ -129,7 +133,7 @@
                         // sync the ip
                         record.data = currentIP;
                         json = JsonConvert.SerializeObject(records);
-                        var content = new StringContent(
+                        HttpContent content = new StringContent(
                             json,
                             System.Text.Encoding.UTF8,
                             @"application/json");

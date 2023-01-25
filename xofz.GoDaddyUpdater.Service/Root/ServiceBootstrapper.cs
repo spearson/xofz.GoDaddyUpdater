@@ -23,7 +23,6 @@
 
         public virtual void Bootstrap()
         {
-            const byte zero = 0;
             const byte one = 1;
 
             if (Interlocked.Exchange(
