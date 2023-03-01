@@ -3,7 +3,6 @@
     using System.Threading;
     using xofz.Framework;
     using xofz.Presentation;
-    using xofz.Presentation.Presenters;
     using xofz.GoDaddyUpdater.UI;
     using xofz.GoDaddyUpdater.Framework.Home;
 
@@ -151,45 +150,28 @@
         private void ui_ExitRequested()
         {
             var r = this.runner;
-            r?.Run<Navigator>(nav =>
+            r.Run<ExitRequestedHandler>(handler =>
             {
-                Do shutdown = nav.Present<ShutdownPresenter>;
-                r.Run<ExitRequestedHandler>(handler =>
-                {
-                    handler.Handle(
-                        this.ui,
-                        shutdown);
-                });
+                handler.Handle(
+                    this.ui);
             });
         }
 
         private void ui_InstallServiceRequested()
         {
             var r = this.runner;
-            r?.Run<Navigator>(nav =>
+            r?.Run<InstallServiceRequestedHandler>(handler =>
             {
-                Do shutdown = nav.Present<ShutdownPresenter>;
-                r.Run<InstallServiceRequestedHandler>(handler =>
-                {
-                    handler.Handle(
-                        this.ui,
-                        shutdown);
-                });
+                handler.Handle();
             });
         }
 
         private void ui_UninstallServiceRequested()
         {
             var r = this.runner;
-            r?.Run<Navigator>(nav =>
+            r?.Run<UninstallServiceRequestedHandler>(handler =>
             {
-                Do shutdown = nav.Present<ShutdownPresenter>;
-                r.Run<UninstallServiceRequestedHandler>(handler =>
-                {
-                    handler.Handle(
-                        this.ui,
-                        shutdown);
-                });
+                handler.Handle();
             });
         }
 

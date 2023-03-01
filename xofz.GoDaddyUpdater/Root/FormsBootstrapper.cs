@@ -1,7 +1,6 @@
 ﻿
 namespace xofz.GoDaddyUpdater.Root
 {
-    using System;
     using System.Threading;
     using System.Windows.Forms;
     using xofz.Framework;
@@ -63,35 +62,43 @@ namespace xofz.GoDaddyUpdater.Root
         {
             var s = this.mainForm;
             var e = this.executor;
+            if (e == null)
+            {
+                return;
+            }
+
             Messenger fm = new FormsMessenger();
             fm.Subscriber = s;
-            e?.Execute(new SetupMethodWebCommand(
+            e.Execute(new SetupMethodWebCommand(
                 new AppConfigSettingsProvider(),
                 fm,
                 new MethodWebV2()));
 
-            var w = e?.Get<SetupMethodWebCommand>()?.W;
-            UnhandledExceptionEventHandler handler = this.onUnhandledException;
-            w?.Run<EventSubscriber>(subscriber =>
+            var w = e.Get<SetupMethodWebCommand>()?.W;
+            if (w == null)
             {
-                var cd = AppDomain.CurrentDomain;
+                return;
+            }
+
+            System.UnhandledExceptionEventHandler handler = this.onUnhandledException;
+            w.Run<EventSubscriber>(subscriber =>
+            {
+                var cd = System.AppDomain.CurrentDomain;
                 subscriber.Subscribe(
                     cd,
                     nameof(cd.UnhandledException),
                     handler);
             });
 
-            e?.Execute(new SetupHomeCommand(
+            e
+                .Execute(new SetupHomeCommand(
                     s,
                     new FormsClipboardCopier(),
+                    w))
+                .Execute(new SetupShutdownCommand(
                     w));
-            ThreadPool.QueueUserWorkItem(o =>
-            {
-                e?.Execute(new SetupShutdownCommand(
-                    w));
-            });
                 
-            w?.Run<Navigator>(nav => 
+            w.Run<Navigator>(nav => 
                 nav.Present<HomePresenter>());
         }
 
@@ -103,9 +110,9 @@ namespace xofz.GoDaddyUpdater.Root
 
         protected virtual void onUnhandledException(
             object sender, 
-            UnhandledExceptionEventArgs e)
+            System.UnhandledExceptionEventArgs e)
         {
-            var w = this.executor.Get<SetupMethodWebCommand>()?.W;
+            var w = this.executor?.Get<SetupMethodWebCommand>()?.W;
             w?.Run<LogEditor>(le =>
                 {
                     LogHelpers.AddEntry(le, e);

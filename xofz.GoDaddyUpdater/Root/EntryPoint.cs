@@ -1,15 +1,14 @@
 ﻿namespace xofz.GoDaddyUpdater.Root
 {
-    using System;
     using System.Reflection;
     using System.Windows.Forms;
 
     internal static class EntryPoint
     {
-        [STAThread]
+        [System.STAThread]
         private static void Main()
         {
-            AppDomain.CurrentDomain.AssemblyResolve +=
+            System.AppDomain.CurrentDomain.AssemblyResolve +=
                 currentDomain_AssemblyResolve;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -22,7 +21,7 @@
 
         private static Assembly currentDomain_AssemblyResolve(
             object sender,
-            ResolveEventArgs e)
+            System.ResolveEventArgs e)
         {
             var resourceName = e.Name;
             var assemblyName = new AssemblyName(resourceName);

@@ -3,11 +3,13 @@
     using System.Net.Http;
     using System.Reflection;
     using xofz.Framework;
+    using xofz.Framework.Axioses;
     using xofz.Framework.Logging.Logs;
     using xofz.Presentation;
     using xofz.Root;
     using xofz.UI;
     using xofz.GoDaddyUpdater.Framework;
+    using xofz.GoDaddyUpdater.Presentation;
 
     public class SetupMethodWebCommand : Command
     {
@@ -31,31 +33,46 @@
         protected virtual void registerDependencies()
         {
             var w = this.web;
-            w?.RegisterDependency(
+            if (w == null)
+            {
+                return;
+            }
+
+            w.RegisterDependency(
                 new UiReaderWriter());
-            w?.RegisterDependency(
+            w.RegisterDependency(
+                new UiHelper());
+            w.RegisterDependency(
+                new EnumerableHelper());
+            w.RegisterDependency(
                 new EventRaiser());
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new EventSubscriber());
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new NavigatorV2(w));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 this.messenger);
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 this.settingsProvider.Provide());
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 (Gen<HttpMessageHandler>)(() => default));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new HttpClientFactory(w));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new TextFileLog(
                     @"Exceptions.log"),
                 LogNames.Exceptions);
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new VersionReader(
                     Assembly.GetExecutingAssembly()));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new ServiceChecker(w));
+            w.RegisterDependency(
+                new Safer());
+            w.RegisterDependency(
+                new NavigatorNavReader(w));
+            w.RegisterDependency(
+                new TimeProvider());
         }
 
         protected readonly SettingsProvider settingsProvider;

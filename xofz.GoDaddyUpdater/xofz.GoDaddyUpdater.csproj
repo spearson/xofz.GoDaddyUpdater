@@ -53,6 +53,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Framework\AdminChecker.cs" />
+    <Compile Include="Framework\NavReader.cs" />
+    <Compile Include="Framework\Home\ProcessStarter.cs" />
+    <Compile Include="Framework\TimeProvider.cs" />
+    <Compile Include="Presentation\NavigatorNavReader.cs" />
     <Compile Include="UI\ClipboardCopier.cs" />
     <Compile Include="Framework\Home\CopyCurrentIpKeyTappedHandler.cs" />
     <Compile Include="Framework\Home\CopyHostnameKeyTappedHandler.cs" />

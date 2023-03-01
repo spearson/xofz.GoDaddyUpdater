@@ -22,9 +22,16 @@
         protected virtual void registerDependencies()
         {
             var w = this.web;
-            w?.RegisterDependency(
+            if (w == null)
+            {
+                return;
+            }
+
+            w.RegisterDependency(
+                new EnumerableHelper());
+            w.RegisterDependency(
                 new EventSubscriber());
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 this.settingsProvider?.Provide());
 
         }

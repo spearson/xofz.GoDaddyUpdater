@@ -18,12 +18,15 @@
             var r = this.runner;
             r?.Run<UiReaderWriter>(uiRw =>
             {
+                const bool
+                    truth = true,
+                    falsity = false;
                 uiRw.Write(
                     ui,
                     () =>
                     {
-                        ui.StartSyncingKeyEnabled = true;
-                        ui.StopSyncingKeyEnabled = false;
+                        ui.StartSyncingKeyDisabled = falsity;
+                        ui.StopSyncingKeyDisabled = truth;
                     });
             });
         }

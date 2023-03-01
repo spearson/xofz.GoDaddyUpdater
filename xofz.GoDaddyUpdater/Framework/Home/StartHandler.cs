@@ -1,6 +1,5 @@
 ﻿namespace xofz.GoDaddyUpdater.Framework.Home
 {
-    using System;
     using xofz.Framework;
     using xofz.GoDaddyUpdater.UI;
     using xofz.UI;
@@ -40,7 +39,7 @@
                     });
 
                     t.Start(
-                        TimeSpan.FromMinutes(5));
+                        System.TimeSpan.FromMinutes(5));
                 },
                 DependencyNames.Timer);
         }

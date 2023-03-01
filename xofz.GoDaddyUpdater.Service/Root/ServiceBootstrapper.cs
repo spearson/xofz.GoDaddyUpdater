@@ -33,17 +33,22 @@
             }
 
             var e = this.executor;
+            if (e == null)
+            {
+                return;
+            }
+
             var w = new xofz.Framework.MethodWebV2();
             e
-                ?.Execute(new SetupMethodWebCommand(
+                .Execute(new SetupMethodWebCommand(
                     new ExeConfigSettingsProvider(),
                     w))
-                ?.Execute(new SetupUpdaterCommand(
+                .Execute(new SetupUpdaterCommand(
                     w));
 
             this.updaterService = e
-                ?.Get<SetupUpdaterCommand>()
-                .UpdaterService;
+                .Get<SetupUpdaterCommand>()
+                ?.UpdaterService;
         }
 
         protected long bootstrappedIf1;

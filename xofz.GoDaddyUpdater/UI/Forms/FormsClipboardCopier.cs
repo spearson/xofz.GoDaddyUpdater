@@ -5,7 +5,8 @@
     public sealed class FormsClipboardCopier 
         : ClipboardCopier
     {
-        void ClipboardCopier.Copy(string text)
+        void ClipboardCopier.Copy(
+            string text)
         {
             try
             {

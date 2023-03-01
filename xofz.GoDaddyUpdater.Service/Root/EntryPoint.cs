@@ -1,6 +1,5 @@
 ﻿namespace xofz.GoDaddyUpdater.Service.Root
-{
-    using System;
+{ 
     using System.Reflection;
     using System.ServiceProcess;
 
@@ -8,7 +7,7 @@
     {
         private static void Main()
         {
-            AppDomain.CurrentDomain.AssemblyResolve 
+            System.AppDomain.CurrentDomain.AssemblyResolve 
                 += currentDomain_AssemblyResolve;
 
             var bootstrapper = new ServiceBootstrapper();
@@ -25,7 +24,7 @@
                 goto run;
             }
 
-            services = Array.Empty<ServiceBase>();
+            services = System.Array.Empty<ServiceBase>();
             
             run:
             ServiceBase.Run(services);
@@ -33,7 +32,7 @@
 
         private static Assembly currentDomain_AssemblyResolve(
             object sender,
-            ResolveEventArgs e)
+            System.ResolveEventArgs e)
         {
             var resourceName = e.Name;
             var assemblyName = new AssemblyName(resourceName);

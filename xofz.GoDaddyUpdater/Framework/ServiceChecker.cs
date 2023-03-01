@@ -1,6 +1,5 @@
 ﻿namespace xofz.GoDaddyUpdater.Framework
 {
-    using System.Linq;
     using System.ServiceProcess;
     using xofz.Framework;
 
@@ -15,25 +14,26 @@
         public virtual bool ServiceExists()
         {
             var r = this.runner;
-            var exists = false;
-            r?.Run<GlobalSettingsHolder>(settings =>
-            {
-                var sc = ServiceController
-                    .GetServices()
-                    .FirstOrDefault(service => service.ServiceName ==
-                        @"gdu."
-                        + settings.Subdomain
-                        + '.'
-                        + settings.Domain
-                        + '.'
-                        + settings
-                            .HttpExternalIpProviderUri
-                            .Replace('/', '-'));
-                if (sc != null)
+            const bool falsity = false;
+            var exists = falsity;
+            r?.Run<
+                GlobalSettingsHolder,
+                EnumerableHelper>(
+                (settings, helper) =>
                 {
-                    exists = true;
-                }
-            });
+                    var service = helper.FirstOrNull(
+                        ServiceController.GetServices(),
+                        s => s.ServiceName ==
+                             @"gdu."
+                             + settings.Subdomain
+                             + '.'
+                             + settings.Domain
+                             + '.'
+                             + settings
+                                 .HttpExternalIpProviderUri
+                                 .Replace('/', '-'));
+                    exists = service != null;
+                });
 
             return exists;
         }

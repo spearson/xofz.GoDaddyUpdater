@@ -13,18 +13,22 @@
         }
 
         public virtual void Handle(
-            HomeUi ui,
-            Do shutdown)
+            HomeUi ui)
         {
             var r = this.runner;
-            r?.Run<UiReaderWriter>(uiRW =>
+            r?.Run<NavReader>(reader =>
             {
-                uiRW.WriteSync(
-                    ui,
-                    ui.HideNotifyIcon);
-            });
+                r.Run<UiReaderWriter>(uiRW =>
+                {
+                    uiRW.WriteSync(
+                        ui,
+                        ui.HideNotifyIcon);
+                });
 
-            shutdown?.Invoke();
+                reader.ReadShutdown(
+                    out var go);
+                go?.Invoke();
+            });
         }
 
         protected readonly MethodRunner runner;

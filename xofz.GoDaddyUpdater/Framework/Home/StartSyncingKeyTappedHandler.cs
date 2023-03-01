@@ -1,6 +1,5 @@
 ﻿namespace xofz.GoDaddyUpdater.Framework.Home
 {
-    using System;
     using xofz.Framework;
     using xofz.GoDaddyUpdater.UI;
     using xofz.UI;
@@ -30,12 +29,15 @@
 
             r?.Run<UiReaderWriter>(uiRw =>
             {
+                const bool
+                    truth = true,
+                    falsity = false;
                 uiRw.WriteSync(
                     ui,
                     () =>
                     {
-                        ui.StartSyncingKeyEnabled = false;
-                        ui.StopSyncingKeyEnabled = true;
+                        ui.StartSyncingKeyDisabled = truth;
+                        ui.StopSyncingKeyDisabled = falsity;
                     });
             });
 
@@ -47,7 +49,7 @@
             r?.Run<xofz.Framework.Timer>(
                 t =>
                 {
-                    t.Start(TimeSpan.FromMinutes(5));
+                    t.Start(System.TimeSpan.FromMinutes(5));
                 },
                 DependencyNames.Timer);
         }

@@ -1,8 +1,6 @@
 ﻿namespace xofz.GoDaddyUpdater.Service.Framework.Updater
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Net;
     using System.Net.Http;
     using System.Net.Sockets;
@@ -28,7 +26,7 @@
                 {
                     using (var hc = factory.Create())
                     {
-                        hc.Timeout = TimeSpan.FromMilliseconds(3000);
+                        hc.Timeout = System.TimeSpan.FromMilliseconds(3000);
                         Task<string> currentIpTask;
                         try
                         {
@@ -79,7 +77,7 @@
 
                     using (var hc = factory.CreateGoDaddy())
                     {
-                        hc.Timeout = TimeSpan.FromMilliseconds(5000);
+                        hc.Timeout = System.TimeSpan.FromMilliseconds(5000);
                         Record record;
                         Task<HttpResponseMessage> task;
                         try
@@ -93,7 +91,8 @@
                         }
 
                         var response = task.Result;
-                        if (!response.IsSuccessStatusCode)
+                        if (response == null || 
+                            !response.IsSuccessStatusCode)
                         {
                             return;
                         }
@@ -121,7 +120,19 @@
                             goto sync;
                         }
 
-                        record = records.First();
+                        var helper = r.Run<EnumerableHelper>();
+                        if (helper == null)
+                        {
+                            return;
+                        }
+
+                        record = helper.FirstOrNull(
+                            records);
+                        if (record == null)
+                        {
+                            return;
+                        }
+
                         syncedIP = record.data;
                         if (syncedIP == currentIP)
                         {

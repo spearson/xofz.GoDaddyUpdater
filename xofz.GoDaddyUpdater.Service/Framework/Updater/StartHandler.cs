@@ -1,6 +1,5 @@
 ﻿namespace xofz.GoDaddyUpdater.Service.Framework.Updater
 {
-    using System;
     using xofz.Framework;
 
     public class StartHandler
@@ -22,7 +21,7 @@
             r?.Run<xofz.Framework.Timer>(t =>
             {
                 t.Start(
-                    TimeSpan.FromMinutes(5));
+                    System.TimeSpan.FromMinutes(5));
             });
         }
 

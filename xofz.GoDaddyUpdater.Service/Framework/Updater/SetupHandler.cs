@@ -13,6 +13,11 @@
         public virtual void Handle(
             Do<string> applyServiceName)
         {
+            if (applyServiceName == null)
+            {
+                return;
+            }
+
             var r = this.runner;
             r?.Run<GlobalSettingsHolder>(settings =>
             {

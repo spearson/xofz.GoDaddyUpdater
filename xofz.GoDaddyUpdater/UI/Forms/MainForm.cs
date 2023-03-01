@@ -1,6 +1,5 @@
 ﻿namespace xofz.GoDaddyUpdater.UI.Forms
 {
-    using System;
     using System.Threading;
     using System.Windows.Forms;
     using xofz.UI.Forms;
@@ -110,18 +109,18 @@
             set => this.lastSyncedLabel.Text = value;
         }
 
-        bool HomeUi.StartSyncingKeyEnabled
+        bool HomeUi.StartSyncingKeyDisabled
         {
-            get => this.startSyncingKey.Enabled;
+            get => !this.startSyncingKey.Enabled;
 
-            set => this.startSyncingKey.Enabled = value;
+            set => this.startSyncingKey.Enabled = !value;
         }
 
-        bool HomeUi.StopSyncingKeyEnabled
+        bool HomeUi.StopSyncingKeyDisabled
         {
-            get => this.stopSyncingKey.Enabled;
+            get => !this.stopSyncingKey.Enabled;
 
-            set => this.stopSyncingKey.Enabled = value;
+            set => this.stopSyncingKey.Enabled = !value;
         }
 
         private const string VersionFlavorText = @"v";
@@ -301,7 +300,7 @@
 
         protected virtual void uninstallServiceToolStripMenuItem_Click(
             object sender, 
-            EventArgs e)
+            System.EventArgs e)
         {
             var usr = this.UninstallServiceRequested;
             if (usr == null)

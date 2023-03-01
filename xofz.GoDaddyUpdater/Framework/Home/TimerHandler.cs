@@ -1,6 +1,5 @@
 ﻿namespace xofz.GoDaddyUpdater.Framework.Home
 {
-    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Net;
@@ -27,7 +26,7 @@
             var r = this.runner;
             r?.Run<LatchHolder>(latch =>
                 {
-                    latch.Latch.Reset();
+                    latch.Latch?.Reset();
                 },
                 DependencyNames.TimerLatch);
             string currentIP = null;
@@ -40,7 +39,7 @@
                     var cantReadIpMessage = messages.CantReadIp;
                     using (var hc = factory.Create())
                     {
-                        hc.Timeout = TimeSpan.FromMilliseconds(10000);
+                        hc.Timeout = System.TimeSpan.FromMilliseconds(10000);
                         Task<string> currentIpTask;
                         try
                         {
@@ -62,15 +61,19 @@
                     {
                         uiRw.Write(
                             ui,
-                            () => ui.CurrentIP = currentIP);
+                            () =>
+                            {
+                                ui.CurrentIP = currentIP;
+                            });
                     });
                 });
 
             r?.Run<
                 HttpClientFactory,
                 GlobalSettingsHolder,
+                TimeProvider,
                 Messages>(
-                (factory, settings, messages) =>
+                (factory, settings, provider, messages) =>
                 {
                     var ipTypeUnknownMessage = messages.IpTypeUnknown;
                     var errorReadingFromDnsMessage = messages.ErrorReadingFromDns;
@@ -79,17 +82,17 @@
                     string syncedIP;
                     IPAddress currentAddress;
                     bool aaaa;
-                    DateTime lastChecked;
+                    System.DateTime lastChecked;
                     if (IPAddress.TryParse(currentIP, out currentAddress))
                     {
                         aaaa = currentAddress
-                            .AddressFamily ==
-                            AddressFamily.InterNetworkV6;
+                                   .AddressFamily ==
+                               AddressFamily.InterNetworkV6;
                         goto buildUri;
                     }
 
                     syncedIP = ipTypeUnknownMessage;
-                    lastChecked = DateTime.Now;
+                    lastChecked = provider.Now();
                     goto setSyncedIP;
 
                     buildUri:
@@ -110,10 +113,10 @@
 
                     using (hc)
                     {
-                        hc.Timeout = TimeSpan.FromSeconds(12);
+                        hc.Timeout = System.TimeSpan.FromSeconds(12);
                         Record record;
                         var task = hc.GetAsync(uri);
-                        bool syncedByService = false;
+                        bool syncedByService = falsity;
                         try
                         {
                             task.Wait();
@@ -121,14 +124,14 @@
                         catch
                         {
                             syncedIP = errorReadingFromDnsMessage;
-                            lastChecked = DateTime.Now;
+                            lastChecked = provider.Now();
                             goto setSyncedIP;
                         }
 
                         var response = task.Result;
-                        if (!response.IsSuccessStatusCode)
+                        if (response == null || !response.IsSuccessStatusCode)
                         {
-                            lastChecked = DateTime.Now;
+                            lastChecked = provider.Now();
                             goto error;
                         }
 
@@ -138,7 +141,7 @@
                             .Result;
                         var records = JsonConvert.DeserializeObject<ICollection<Record>>(
                             json);
-                        lastChecked = DateTime.Now;
+                        lastChecked = provider.Now();
                         if (records.Count < 1)
                         {
                             record = new Record
@@ -165,7 +168,7 @@
                             var lsip = this.lastSyncedIP;
                             if (lsip != currentIP && lsip != default)
                             {
-                                syncedByService = true;
+                                syncedByService = truth;
                                 goto afterSync;
                             }
 
@@ -183,10 +186,7 @@
                         {
                             shouldSync = uiRw.Read(
                                 ui,
-                                () =>
-                                {
-                                    return ui.StopSyncingKeyEnabled;
-                                });
+                                () => ui.StartSyncingKeyDisabled);
                         });
 
                         if (!shouldSync)
@@ -213,7 +213,7 @@
                         {
                             syncTask.Wait();
                         }
-                        catch (Exception ex)
+                        catch (System.Exception ex)
                         {
                             syncedIP = errorSyncingMessage
                                 + ex.InnerException?.GetType()
@@ -231,12 +231,12 @@
                         afterSync:
                         if (syncedByService || response.IsSuccessStatusCode)
                         {
-                            var lastSynced = DateTime
-                                .Now
+                            var lastSynced = provider
+                                .Now()
                                 .ToString(CultureInfo.CurrentUICulture);
                             if (syncedByService)
                             {
-                                lastSynced += Environment.NewLine;
+                                lastSynced += System.Environment.NewLine;
                                 lastSynced += settings.ServiceAttribution;
                             }
 
@@ -288,7 +288,8 @@
                         return;
                     }
 
-                    if (syncedIP?.Contains(errorSyncingMessage) ?? true)
+                    if (syncedIP?.Contains(errorSyncingMessage) 
+                        ?? truth)
                     {
                         return;
                     }
@@ -310,7 +311,7 @@
 
             r?.Run<LatchHolder>(latch =>
                 {
-                    latch.Latch.Set();
+                    latch.Latch?.Set();
                 },
                 DependencyNames.TimerLatch);
         }
@@ -321,6 +322,9 @@
             this.lastSyncedIP = lastSyncedIP;
         }
 
+        protected const bool
+            truth = true,
+            falsity = false;
         protected string lastSyncedIP;
         protected readonly MethodRunner runner;
     }

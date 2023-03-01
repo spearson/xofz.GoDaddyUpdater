@@ -36,9 +36,9 @@
 
         string CoreVersion { get; set; }
 
-        bool StartSyncingKeyEnabled { get; set; }
+        bool StartSyncingKeyDisabled { get; set; }
 
-        bool StopSyncingKeyEnabled { get; set; }
+        bool StopSyncingKeyDisabled { get; set; }
 
         bool ServiceInstalled { get; set; }
 

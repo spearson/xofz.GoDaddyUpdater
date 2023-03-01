@@ -33,12 +33,19 @@
         protected virtual void registerDependencies()
         {
             var w = this.web;
-            w?.RegisterDependency(
+            if (w == null)
+            {
+                return;
+            }
+
+            w.RegisterDependency(
+                this.ui);
+            w.RegisterDependency(
                 new xofz.Framework.Timer(),
                 DependencyNames.Timer);
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 this.clipboardCopier);
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new Messages
                 {
                     CantReadIp =
@@ -51,37 +58,40 @@
                     ErrorSyncing =
                         @"Error syncing. "
                 });
-            w?.RegisterDependency(
+            w.RegisterDependency(
+                new ProcessStarter(w));
+            w.RegisterDependency(
                 new SetupHandler(w));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new StartHandler(w));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new StopHandler(w));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new CopyHostnameKeyTappedHandler(w));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new CopyCurrentIpKeyTappedHandler(w));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new CopySyncedIpKeyTappedHandler(w));
-            w?.RegisterDependency(
+            const bool truth = true;
+            w.RegisterDependency(
                 new LatchHolder
                 {
-                    Latch = new ManualResetEvent(true)
+                    Latch = new ManualResetEvent(truth)
                 },
                 DependencyNames.TimerLatch);
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new TimerHandler(w));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new StartSyncingKeyTappedHandler(w));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new StopSyncingKeyTappedHandler(w));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new ExitRequestedHandler(w));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new AdminChecker(w));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new InstallServiceRequestedHandler(w));
-            w?.RegisterDependency(
+            w.RegisterDependency(
                 new UninstallServiceRequestedHandler(w));
         }
 

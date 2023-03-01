@@ -1,6 +1,5 @@
 ﻿namespace xofz.GoDaddyUpdater.Service.Framework.SettingsProviders
 {
-    using System;
     using System.Configuration;
     using System.IO;
     using System.Reflection;
@@ -31,7 +30,7 @@
             catch
             {
                 exePath = new StringBuilder()
-                    .Append(Environment.CurrentDirectory)
+                    .Append(System.Environment.CurrentDirectory)
                     .Append("\\")
                     .Append(nameof(xofz))
                     .Append('.')

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("xofz.GoDaddyUpdater.Service")]
@@ -11,4 +10,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("2dcebd2b-86e0-45c0-9d92-3148c20dabbe")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: CLSCompliant(true)]
+[assembly: System.CLSCompliant(true)]

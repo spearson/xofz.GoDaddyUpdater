@@ -19,13 +19,13 @@
             r?.Run<GlobalSettingsHolder, UiReaderWriter>(
                 (settings, uiRW) =>
                 {
-                    var startKeyEnabled = !settings.AutoStart;
+                    var startKeyDisabled = settings.AutoStart;
                     uiRW.WriteSync(
                         ui,
                         () =>
                         {
-                            ui.StartSyncingKeyEnabled = startKeyEnabled;
-                            ui.StopSyncingKeyEnabled = !startKeyEnabled;
+                            ui.StartSyncingKeyDisabled = startKeyDisabled;
+                            ui.StopSyncingKeyDisabled = !startKeyDisabled;
                         });
                 });
 
