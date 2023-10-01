@@ -1,5 +1,4 @@
-﻿
-namespace xofz.GoDaddyUpdater.Root
+﻿namespace xofz.GoDaddyUpdater.Root
 {
     using System.Threading;
     using System.Windows.Forms;

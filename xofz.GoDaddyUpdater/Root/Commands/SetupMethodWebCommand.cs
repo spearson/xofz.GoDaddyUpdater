@@ -53,7 +53,7 @@
             w.RegisterDependency(
                 this.messenger);
             w.RegisterDependency(
-                this.settingsProvider.Provide());
+                this.settingsProvider?.Provide());
             w.RegisterDependency(
                 (Gen<HttpMessageHandler>)(() => default));
             w.RegisterDependency(
