@@ -38,7 +38,7 @@
                 return;
             }
 
-            var w = new xofz.Framework.MethodWebV2();
+            var w = new xofz.Framework.MethodWeb();
             e
                 .Execute(new SetupMethodWebCommand(
                     new ExeConfigSettingsProvider(),

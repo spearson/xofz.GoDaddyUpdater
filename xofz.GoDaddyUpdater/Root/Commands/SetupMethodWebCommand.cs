@@ -55,7 +55,7 @@
             w.RegisterDependency(
                 this.settingsProvider?.Provide());
             w.RegisterDependency(
-                (Gen<HttpMessageHandler>)(() => default));
+                (Gen<HttpMessageHandler>)(() => null));
             w.RegisterDependency(
                 new HttpClientFactory(w));
             w.RegisterDependency(

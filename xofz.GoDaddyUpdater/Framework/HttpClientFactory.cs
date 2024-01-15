@@ -15,12 +15,12 @@
         public virtual HttpClient Create()
         {
             var r = this.runner;
-            var client = default(HttpClient);
+            HttpClient client = null;
             r?.Run<Gen<HttpMessageHandler>>(
                 createHandler =>
                 {
                     var handler = createHandler();
-                    if (handler == default(HttpMessageHandler))
+                    if (handler == null)
                     {
                         client = new HttpClient();
                         return;

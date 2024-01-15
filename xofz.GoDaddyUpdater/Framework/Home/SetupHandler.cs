@@ -16,46 +16,49 @@
             HomeUi ui)
         {
             var r = this.runner;
-            r?.Run<GlobalSettingsHolder, UiReaderWriter>(
-                (settings, uiRW) =>
-                {
-                    var startKeyDisabled = settings.AutoStart;
-                    uiRW.WriteSync(
-                        ui,
-                        () =>
-                        {
-                            ui.StartSyncingKeyDisabled = startKeyDisabled;
-                            ui.StopSyncingKeyDisabled = !startKeyDisabled;
-                        });
-                });
+            r?.Run<UiReaderWriter>(uiRW =>
+            {
+                r?.Run<GlobalSettingsHolder>(
+                    settings =>
+                    {
+                        var startKeyDisabled = settings.AutoStart;
+                        uiRW.WriteSync(
+                            ui,
+                            () =>
+                            {
+                                ui.StartSyncingKeyDisabled = startKeyDisabled;
+                                ui.StopSyncingKeyDisabled = !startKeyDisabled;
+                            });
+                    });
 
-            r?.Run<GlobalSettingsHolder, UiReaderWriter>(
-                (settings, uiRW) =>
-                {
-                    var hostname = settings.Subdomain + '.' + settings.Domain;
-                    var ipProviderUri = settings.HttpExternalIpProviderUri;
-                    uiRW.Write(
-                        ui,
-                        () =>
-                        {
-                            ui.Hostname = hostname;
-                            ui.IpProviderUri = ipProviderUri;
-                        });
-                });
+                r?.Run<GlobalSettingsHolder>(
+                    settings =>
+                    {
+                        var hostname = settings.Subdomain + '.' + settings.Domain;
+                        var ipProviderUri = settings.HttpExternalIpProviderUri;
+                        uiRW.Write(
+                            ui,
+                            () =>
+                            {
+                                ui.Hostname = hostname;
+                                ui.IpProviderUri = ipProviderUri;
+                            });
+                    });
 
-            r?.Run<VersionReader, UiReaderWriter>(
-                (vr, uiRW) =>
-                {
-                    var version = vr.Read();
-                    var coreVersion = vr.ReadCoreVersion();
-                    uiRW.Write(
-                        ui,
-                        () =>
-                        {
-                            ui.Version = version;
-                            ui.CoreVersion = coreVersion;
-                        });
-                });
+                r?.Run<VersionReader>(
+                    vr =>
+                    {
+                        var version = vr.Read();
+                        var coreVersion = vr.ReadCoreVersion();
+                        uiRW.Write(
+                            ui,
+                            () =>
+                            {
+                                ui.Version = version;
+                                ui.CoreVersion = coreVersion;
+                            });
+                    });
+            });
         }
 
         protected readonly MethodRunner runner;

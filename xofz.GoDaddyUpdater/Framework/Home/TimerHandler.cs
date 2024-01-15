@@ -288,8 +288,12 @@
                         return;
                     }
 
-                    if (syncedIP?.Contains(errorSyncingMessage) 
-                        ?? truth)
+                    if (syncedIP == null)
+                    {
+                        return;
+                    }
+
+                    if (syncedIP.Contains(errorSyncingMessage))
                     {
                         return;
                     }

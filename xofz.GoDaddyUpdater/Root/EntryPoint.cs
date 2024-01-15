@@ -24,6 +24,11 @@
             System.ResolveEventArgs e)
         {
             var resourceName = e.Name;
+            if (resourceName == null)
+            {
+                return null;
+            }
+
             var assemblyName = new AssemblyName(resourceName);
             if (resourceName.EndsWith(
                 @"Retargetable=Yes"))

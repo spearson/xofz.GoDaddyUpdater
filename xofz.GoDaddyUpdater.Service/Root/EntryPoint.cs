@@ -18,7 +18,7 @@
             {
                 services = new[]
                 {
-                    bootstrapper.Service
+                    service
                 };
 
                 goto run;
